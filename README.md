@@ -10,3 +10,8 @@ http://localhost:3001/graphql
 yarn nx codegen-generate frontend
 
 
+## to run apis
+
+`docker-compose up`
+
+`yarn nx serve apis`
