@@ -26,7 +26,7 @@ add `$HOME/.docker/bin` to PATH
 12. started graphQL server by 
 `docker-compose up -d`
 `yarn`
-`yarn nx server apis`
+`yarn nx serve apis`
 
 13. the GraphQL playground should be avaiable at 
 `http://localhost:3001/graphql`

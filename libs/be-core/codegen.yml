@@ -1,0 +1,10 @@
+overwrite: true
+schema: libs/be-core/src/lib/graphql/schema.graphql
+generates:
+  libs/be-core/src/lib/graphql/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
+      contextType: "../context#MyContext"

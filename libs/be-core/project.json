@@ -3,7 +3,23 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/be-core/src",
   "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project be-core --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/be-core",
+        "main": "libs/be-core/src/index.ts",
+        "tsConfig": "libs/be-core/tsconfig.lib.json",
+        "assets": ["libs/be-core/*.md"]
+      }
+    },
+    "graphql-codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config libs/be-core/codegen.yml"
+      }
+    }
+  },
+  "tags": []
 }

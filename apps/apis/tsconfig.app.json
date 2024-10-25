@@ -7,10 +7,13 @@
       "node"
     ],
     "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "es2021",
+    "composite": true,
+    "declaration": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../../libs/be-core/src/**/*.ts"
   ],
   "exclude": [
     "jest.config.ts",

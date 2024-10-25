@@ -1,46 +1,32 @@
-import { Args, Field, Float, InputType, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
-//import { LoginResponse } from './loginResponse';
+import { LoginResponse, LoginInput } from '../graphql/generated/graphql';
 
 
 
-@ObjectType()
-export class LoginResponse {
-  @Field()
-  accessToken: string = '';
-}
-
-@InputType()
-   export class LoginInput {
-     @Field()
-     email: string ="";
-
-     @Field()
-     password: string ="";
-   }
-
-@Resolver('root')
+@Resolver('SignIn')
 export class SignInResolver {
   constructor(private jwtService: JwtService) {}
 
-  @Query(() => Float)
+  @Query(() => Number)
   uptime() {
     return process.uptime();
   }
 
-  @Mutation(() => LoginResponse)
-  login(
-    @Args('credentials')
-    { email, password }: LoginInput 
-  ) {
-    if (email !== 'test@example.com') {
+  @Mutation('login')
+  login(@Args('credentials') credentials: LoginInput): LoginResponse {
+    if (credentials.email !== 'test@example.com') {
       throw new Error('Invalid credentials');
     }
 
-    const payload = { username: email, sub: email };
+    const payload = { username: credentials.email, sub: credentials.email };
 
-    return {
-        accessToken: this.jwtService.sign(payload),
-    };
+    const accessToken = this.jwtService.sign(payload);
+    
+    if (!accessToken) {
+      throw new Error('Failed to generate token');
+    }
+
+    return { accessToken };
   }
 }

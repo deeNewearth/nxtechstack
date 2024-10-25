@@ -4,7 +4,7 @@ import { Field, InputType, ObjectType } from "@nestjs/graphql";
 @ObjectType()
 export class SubscriberDetails {
     @Field()
-    phoneNumber: string = '';
+    phoneNumber!: string;
   
     @Field({ nullable: true })
     firstName?: string;
@@ -12,7 +12,6 @@ export class SubscriberDetails {
     @Field({ nullable: true })
     lastName?: string;
 
-    // only used for month and year
     @Field({ nullable: true })
     birthDay?: Date;
 }
@@ -23,13 +22,13 @@ export class SubscriberDetails {
 export class SubscriberDto {
   
     @Field()
-    details: SubscriberDetails = {phoneNumber :""}
+    details!: SubscriberDetails;
 }
 
 @InputType()
 export class SubscriberDetailsInput {
     @Field()
-    phoneNumber: string = '';
+    phoneNumber!: string;
   
     @Field({ nullable: true })
     firstName?: string;
@@ -37,7 +36,6 @@ export class SubscriberDetailsInput {
     @Field({ nullable: true })
     lastName?: string;
 
-    // only used for month and year
     @Field({ nullable: true })
     birthDay?: Date;
 }
