@@ -6,7 +6,7 @@
     "start": "nx run be-core:build && nx serve apis",
     "build": "nx build apis",
     "test": "nx test",
-    "lint": "nx lint",
+    "lint": "nx run-many --target=lint --all",
     "e2e": "nx e2e",
     "generate:types": "nx run be-core:graphql-codegen",
     "seed": "ts-node -r tsconfig-paths/register libs/be-core/src/lib/cli/seed.command.ts"
@@ -53,6 +53,7 @@
     "@nx/eslint-plugin": "20.0.0",
     "@nx/jest": "20.0.0",
     "@nx/js": "20.0.0",
+    "@nx/linter": "^19.8.4",
     "@nx/nest": "20.0.0",
     "@nx/next": "^20.0.0",
     "@nx/node": "20.0.0",

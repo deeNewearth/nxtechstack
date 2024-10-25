@@ -29,6 +29,13 @@
         "build"
       ],
       "command": "docker build -f apps/apis/Dockerfile . -t apis"
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/apis/**/*.ts"]
+      }
     }
   }
 }

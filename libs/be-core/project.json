@@ -19,6 +19,13 @@
       "options": {
         "command": "graphql-codegen --config libs/be-core/codegen.yml"
       }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/be-core/**/*.ts"]
+      }
     }
   },
   "tags": []
