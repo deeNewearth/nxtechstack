@@ -1,4 +1,3 @@
-
 # Steps to get this working on the dev machine
 
 1. installed x-code from self serve tool
@@ -23,32 +22,67 @@ add `$HOME/.docker/bin` to PATH
 11. install yarn
 `npm install --global yarn`
 
-12. started graphQL server by 
-`docker-compose up -d`
-`yarn`
-`yarn nx serve apis`
+12. Install project dependencies:
+    ```
+    yarn
+    ```
 
-13. the GraphQL playground should be avaiable at 
-`http://localhost:3001/graphql`
+13. Generate GraphQL types:
+    ```
+    yarn generate:types
+    ```
 
+14. Seed the database (optional):
+    ```
+    yarn seed
+    ```
 
+15. Start the GraphQL server:
+    ```
+    yarn start
+    ```
+
+16. The GraphQL playground should be available at:
+    ```
+    http://localhost:3001/graphql
+    ```
+
+# Additional Commands
+
+- Lint the project:
+  ```
+  yarn lint
+  ```
+
+- Run tests:
+  ```
+  yarn test
+  ```
+
+- Build the project:
+  ```
+  yarn build
+  ```
+
+- Run end-to-end tests:
+  ```
+  yarn e2e
+  ```
 
 # dev notes
 
+## GraphQL
 
-## graphql
+GraphQL playground: http://localhost:3001/graphql
 
-http://localhost:3001/graphql
+## To run APIs
 
---fe codegen
+- Start MongoDB and other infrastructure:
+  ```
+  docker-compose up -d
+  ```
 
-yarn nx codegen-generate frontend
-
-
-## to run apis
-
-- start mongo and other infrastructure
-`docker-compose up -d`
-
-- start the graphQL server
-`yarn nx serve apis`
+- Start the GraphQL server:
+  ```
+  yarn start
+  ```
