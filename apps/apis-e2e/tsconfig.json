@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
+  "types": ["jest", "node"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"],
   "references": [
     {
       "path": "./tsconfig.spec.json"

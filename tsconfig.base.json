@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@kiss/be-core": ["libs/be-core/src/index.ts"]
-    }
+    },
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "tmp"]
 }

@@ -46,6 +46,7 @@ export type MutationUpdateSubscriberDetailsArgs = {
 export type Query = {
   __typename?: 'Query';
   getSubscribers: Array<Subscriber>;
+  placeholder?: Maybe<Scalars['String']['output']>;
   uptime: Scalars['Float']['output'];
 };
 
@@ -185,6 +186,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getSubscribers?: Resolver<Array<ResolversTypes['Subscriber']>, ParentType, ContextType, Partial<QueryGetSubscribersArgs>>;
+  placeholder?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   uptime?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 }>;
 

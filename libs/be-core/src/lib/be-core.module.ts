@@ -10,6 +10,9 @@ import { MigrationService } from './database/migration.service';
 import { configuration } from './config/configuration';
 import { SignInResolver } from './signIn/signIn.resolver';
 import { DbService } from './common/db.service';
+import { APP_FILTER } from '@nestjs/core';
+import { LoggerModule } from './modules/logger.module';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 
 @Module({
   imports: [
@@ -31,8 +34,19 @@ import { DbService } from './common/db.service';
       context: ({ req }: { req: any }) => ({ req }),
     }),
     DatabaseModule,
+    LoggerModule,
   ],
-  providers: [SubscriberResolver, SubscribersRepository, MigrationService, SignInResolver, DbService],
+  providers: [
+    SubscriberResolver,
+    SubscribersRepository,
+    MigrationService,
+    SignInResolver,
+    DbService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
   exports: [MigrationService, DbService],
 })
 export class BeCoreModule {}

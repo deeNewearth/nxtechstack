@@ -28,6 +28,7 @@ input LoginInput {
 type Query {
   getSubscribers(phoneNumber: String, name: String): [Subscriber!]!
   uptime: Float!
+  placeholder: String
 }
 
 type Mutation {

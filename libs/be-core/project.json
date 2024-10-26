@@ -26,6 +26,14 @@
       "options": {
         "lintFilePatterns": ["libs/be-core/**/*.ts"]
       }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/be-core"],
+      "options": {
+        "jestConfig": "libs/be-core/jest.config.ts",
+        "passWithNoTests": true
+      }
     }
   },
   "tags": []
