@@ -22,27 +22,41 @@ add `$HOME/.docker/bin` to PATH
 11. install yarn
 `npm install --global yarn`
 
-12. Install project dependencies:
+12. Copy the environment file:
+    ```
+    cp .env.example .env
+    ```
+
+13. Open the .env file and update any necessary configurations
+
+14. Start Docker Desktop application
+
+15. Start MongoDB and other infrastructure:
+    ```
+    docker-compose up -d
+    ```
+
+16. Install project dependencies:
     ```
     yarn
     ```
 
-13. Generate GraphQL types:
+17. Generate GraphQL types:
     ```
     yarn generate:types
     ```
 
-14. Seed the database (optional):
+18. Seed the database (optional):
     ```
     yarn seed
     ```
 
-15. Start the GraphQL server:
+19. Start the GraphQL server:
     ```
     yarn start
     ```
 
-16. The GraphQL playground should be available at:
+20. The GraphQL playground should be available at:
     ```
     http://localhost:3001/graphql
     ```
@@ -74,6 +88,22 @@ add `$HOME/.docker/bin` to PATH
 ## GraphQL
 
 GraphQL playground: http://localhost:3001/graphql
+
+### Recommended GraphQL Client
+
+For a more robust GraphQL exploration experience, it's recommended to use the Altair GraphQL Client Chrome Extension. This tool offers more features and flexibility compared to the built-in GraphQL playground.
+
+You can install the Altair GraphQL Client from the Chrome Web Store:
+[Altair GraphQL Client](https://chromewebstore.google.com/detail/altair-graphql-client/flnheeellpciglgpaodhkhmapeljopja?hl=en)
+
+Key benefits of using Altair:
+- Rich feature set for testing and debugging GraphQL queries
+- User-friendly interface with syntax highlighting and auto-completion
+- Ability to set custom headers and variables
+- Support for GraphQL subscriptions
+- Offline access to schema documentation
+
+To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:3001/graphql`
 
 ## To run APIs
 
