@@ -14,6 +14,7 @@ We have implemented a hierarchy of custom error classes to handle various types 
 - `NotFoundError` (E005): For resource not found errors.
 - `ConflictError` (E006): For conflicts in operations (e.g., duplicate entries).
 - `InternalServerError` (E007): For unexpected server errors.
+- `InvalidEmailError` (E008): For invalid email format.
 
 ## Global Exception Filter
 

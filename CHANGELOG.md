@@ -13,11 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added migration system for database schema changes.
 - Implemented seeding functionality for the Subscriber collection.
 - Added CLI command for database seeding.
+- **[2024-11-01]** Added global exception filter for consistent error handling across HTTP and GraphQL contexts.
+- **[2024-11-01]** Introduced custom error classes for validation, database, authentication, and more.
 
 ### Changed
 - Updated `BeCoreModule` to use Mongoose and GraphQL.
 - Modified `SubscriberResolver` to use Mongoose models and GraphQL types.
 - Updated `package.json` with new scripts and dependencies.
+- **[2024-11-01]** Refactored error handling in resolvers and repositories to use custom error classes.
 
 ### Fixed
 - Resolved issues with GraphQL type generation.
@@ -71,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Error Handling and Logging
 - Improved error handling in `migration.service.ts` and `subscriber.seeder.ts`.
 - Added logging for better debugging and monitoring.
+- **[2024-11-01]** Enhanced error handling with the introduction of a global exception filter and custom error classes.
 
 ### Development Workflow Improvements
 - Added script in `package.json` for running database seeds.

@@ -13,6 +13,8 @@ import { DbService } from './common/db.service';
 import { APP_FILTER } from '@nestjs/core';
 import { LoggerModule } from './modules/logger.module';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
+import { LoggingService } from './services/logging.service';
+import { UtilityService } from './services/utility.service';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { AllExceptionsFilter } from './filters/all-exceptions.filter';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    LoggingService,
+    UtilityService,
   ],
   exports: [MigrationService, DbService],
 })

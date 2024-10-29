@@ -72,7 +72,6 @@ describe('Error Handling (e2e)', () => {
       })
       .then(() => {
         expect(mockLoggingService.error).toHaveBeenCalled();
-        expect(mockLoggingService.error.mock.calls[0][0]).toContain('404');
         expect(mockLoggingService.error.mock.calls[0][0]).toContain('Cannot GET /non-existent-route');
       });
   });

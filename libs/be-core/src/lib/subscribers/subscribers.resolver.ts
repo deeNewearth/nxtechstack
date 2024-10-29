@@ -10,26 +10,46 @@ import {
   SubscriberDetailsInput,
 } from '../graphql/generated/graphql';
 import { Subscriber as MongooseSubscriber } from './subscriber.schema';
+import { LoggingService } from '../services/logging.service';
 
 @Resolver('Subscriber')
 export class SubscriberResolver {
-  constructor(private subscribersRepository: SubscribersRepository) {}
+  constructor(
+    private subscribersRepository: SubscribersRepository,
+    private logger: LoggingService
+  ) {}
 
   @Query('getSubscribers')
   async getSubscribers(
     @Args('phoneNumber', { type: () => String, nullable: true }) phoneNumber?: string,
     @Args('name', { type: () => String, nullable: true }) name?: string
   ): Promise<GraphQLSubscriber[]> {
-    const subscribers = await this.subscribersRepository.findAll(phoneNumber, name);
-    return this.mapToGraphQLSubscribers(subscribers);
+    this.logger.info('Fetching subscribers');
+    try {
+      const subscribers = await this.subscribersRepository.findAll(phoneNumber, name);
+      this.logger.info('Successfully fetched subscribers');
+      return this.mapToGraphQLSubscribers(subscribers);
+    } catch (error) {
+      // this.logger.error('Error fetching subscribers', error instanceof Error ? error.stack : '');
+      throw error; // Allow the error to propagate to the global exception filter
+    }
   }
 
   @Mutation('updateSubscriberDetails')
   async updateSubscriberDetails(
     @Args('details') details: SubscriberDetailsInput
   ): Promise<GraphQLSubscriber> {
-    const subscriber = await this.subscribersRepository.updateDetails(details);
-    return this.mapToGraphQLSubscriber(subscriber);
+    this.logger.info('Updating subscriber details');
+    try {
+      const subscriber = await this.subscribersRepository.updateDetails(details);
+      this.logger.info('Successfully updated subscriber details');
+      return this.mapToGraphQLSubscriber(subscriber);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error('Error updating subscriber details', error.stack);
+      }
+      throw error;
+    }
   }
 
   private mapToGraphQLSubscribers(subscribers: MongooseSubscriber[]): GraphQLSubscriber[] {
