@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added migration system for database schema changes.
 - Implemented seeding functionality for the Subscriber collection.
 - Added CLI command for database seeding.
-- **[2024-11-01]** Added global exception filter for consistent error handling across HTTP and GraphQL contexts.
-- **[2024-11-01]** Introduced custom error classes for validation, database, authentication, and more.
+- **[2024-10-29]** Added global exception filter for consistent error handling across HTTP and GraphQL contexts.
+- **[2024-10-29]** Introduced custom error classes for validation, database, authentication, and more.
+- **[2024-10-30]** Configured CORS to allow access from GraphQL Playground running on `http://localhost:4000`.
 
 ### Changed
 - Updated `BeCoreModule` to use Mongoose and GraphQL.
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Resolved issues with GraphQL type generation.
 - Fixed TypeScript errors related to null safety in Subscriber schema.
+- **[2024-10-30]** Fixed CORS issues to enable GraphQL Playground access.
 
 ## [0.1.0] - 2024-10-25
 
@@ -74,8 +76,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Error Handling and Logging
 - Improved error handling in `migration.service.ts` and `subscriber.seeder.ts`.
 - Added logging for better debugging and monitoring.
-- **[2024-11-01]** Enhanced error handling with the introduction of a global exception filter and custom error classes.
+- **[2024-10-29]** Enhanced error handling with the introduction of a global exception filter and custom error classes.
 
 ### Development Workflow Improvements
 - Added script in `package.json` for running database seeds.
 - Implemented separate command for database seeding to avoid automatic seeding on every run.
+
+### CORS and GraphQL Playground Integration
+- **[2024-10-30]** Configured CORS settings to allow access from GraphQL Playground running on `http://localhost:4000`.
+- Updated `main.ts` to ensure CORS settings are correctly applied for development environments.

@@ -87,7 +87,11 @@ add `$HOME/.docker/bin` to PATH
 
 ## GraphQL
 
-GraphQL playground: http://localhost:3001/graphql
+- Built in GraphiQL seems to have major UI issues, therefore using the 3rd party GraphQL playground
+- if you would like to pre-populate the playground you can use a url with encoded query like: 
+```http://localhost:4000/graphql?query=query%20GetSubscribers%20%7B%20getSubscribers%20%7B%20details%20%7B%20phoneNumber%20firstName%20lastName%20birthDay%20%7D%20%7D%20%7D```
+
+GraphQL playground: http://localhost:4000/graphql
 
 ### Recommended GraphQL Client
 
