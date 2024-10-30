@@ -83,22 +83,14 @@ add `$HOME/.docker/bin` to PATH
   yarn e2e
   ```
 
-# dev notes
+# Dev notes
 
 ## GraphQL
 
-- Built in GraphiQL seems to have major UI issues, therefore using the 3rd party GraphQL playground
-- if you would like to pre-populate the playground you can use a url with encoded query like: 
-```http://localhost:4000/graphql?query=query%20GetSubscribers%20%7B%20getSubscribers%20%7B%20details%20%7B%20phoneNumber%20firstName%20lastName%20birthDay%20%7D%20%7D%20%7D```
+Altaire GraphQL playground: http://localhost:4000/graphql
 
-GraphQL playground: http://localhost:4000/graphql
+- Altaire is a more feature rich GraphQL client that can be used as an alternative to the built in GraphQL playground
 
-### Recommended GraphQL Client
-
-For a more robust GraphQL exploration experience, it's recommended to use the Altair GraphQL Client Chrome Extension. This tool offers more features and flexibility compared to the built-in GraphQL playground.
-
-You can install the Altair GraphQL Client from the Chrome Web Store:
-[Altair GraphQL Client](https://chromewebstore.google.com/detail/altair-graphql-client/flnheeellpciglgpaodhkhmapeljopja?hl=en)
 
 Key benefits of using Altair:
 - Rich feature set for testing and debugging GraphQL queries
@@ -108,6 +100,17 @@ Key benefits of using Altair:
 - Offline access to schema documentation
 
 To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:3001/graphql`
+
+This project includes an Altaire Collection located in: ds9-graphql-collection.agc
+
+For more information on Altair, please visit: https://altairgraphql.dev/docs/features/documentation
+
+To import the collection:
+
+1. Open Altair
+2. Click on the Collections tab
+3. Click the Import button
+4. Select the ds9-graphql-collection.agc file
 
 ## To run APIs
 

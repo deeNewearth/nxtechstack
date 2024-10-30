@@ -9,9 +9,9 @@ services:
     ports:
       - 27017:27017
 
-  playground:
-    image: imega/graphql-playground:latest
+  altair:
+    image: maxifom/altair-docker
     ports:
-      - '4000:4000'
+      - 4000:80
     environment:
-      - GRAPHQL_PLAYGROUND_ENDPOINT=http://localhost:3001/graphql
+      - GRAPHQL_URL=http://localhost:3001/graphql
