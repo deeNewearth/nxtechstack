@@ -1,12 +1,20 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { configuration } from './config/configuration';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { SignInResolver } from './signIn/signIn.resolver';
-import { ApolloDriver } from '@nestjs/apollo';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { JwtModule } from '@nestjs/jwt';
-import { DbService } from './common/db.service';
+import { DatabaseModule } from './database/mongoose.module';
 import { SubscriberResolver } from './subscribers/subscribers.resolver';
+import { SubscribersRepository } from './subscribers/subscribers.repository';
+import { MigrationService } from './database/migration.service';
+import { configuration } from './config/configuration';
+import { SignInResolver } from './signIn/signIn.resolver';
+import { DbService } from './common/db.service';
+import { APP_FILTER } from '@nestjs/core';
+import { LoggerModule } from './modules/logger.module';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
+import { LoggingService } from './services/logging.service';
+import { UtilityService } from './services/utility.service';
 
 @Module({
   imports: [
@@ -14,21 +22,35 @@ import { SubscriberResolver } from './subscribers/subscribers.resolver';
       isGlobal: true,
       load: [configuration],
     }),
-    JwtModule.register({
-      secret: process.env['APP_SECRET_KEY'],
-      signOptions: { expiresIn: '600m' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('APP_SECRET_KEY'),
+        signOptions: { expiresIn: '600m' },
+      }),
+      inject: [ConfigService],
     }),
-    GraphQLModule.forRoot({
-      autoSchemaFile: true,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      cors: {
-        origin: 'http://localhost:3000',
-        credentials: true,
-      },
+      typePaths: ['./libs/be-core/src/lib/graphql/schema.graphql'],
+      context: ({ req }: { req: any }) => ({ req }),
     }),
+    DatabaseModule,
+    LoggerModule,
   ],
-  controllers: [],
-  providers: [DbService,SignInResolver,SubscriberResolver],
-  exports: [],
+  providers: [
+    SubscriberResolver,
+    SubscribersRepository,
+    MigrationService,
+    SignInResolver,
+    DbService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    LoggingService,
+    UtilityService,
+  ],
+  exports: [MigrationService, DbService],
 })
 export class BeCoreModule {}

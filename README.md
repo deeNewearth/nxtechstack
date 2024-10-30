@@ -1,4 +1,3 @@
-
 # Steps to get this working on the dev machine
 
 1. installed x-code from self serve tool
@@ -23,32 +22,104 @@ add `$HOME/.docker/bin` to PATH
 11. install yarn
 `npm install --global yarn`
 
-12. started graphQL server by 
-`docker-compose up -d`
-`yarn`
-`yarn nx server apis`
+12. Copy the environment file:
+    ```
+    cp .env.example .env
+    ```
 
-13. the GraphQL playground should be avaiable at 
-`http://localhost:3001/graphql`
+13. Open the .env file and update any necessary configurations
+
+14. Start Docker Desktop application
+
+15. Start MongoDB and other infrastructure:
+    ```
+    docker-compose up -d
+    ```
+
+16. Install project dependencies:
+    ```
+    yarn
+    ```
+
+17. Generate GraphQL types:
+    ```
+    yarn generate:types
+    ```
+
+18. Seed the database (optional):
+    ```
+    yarn seed
+    ```
+
+19. Start the GraphQL server:
+    ```
+    yarn start
+    ```
+
+20. The GraphQL playground should be available at:
+    ```
+    http://localhost:3001/graphql
+    ```
+
+# Additional Commands
+
+- Lint the project:
+  ```
+  yarn lint
+  ```
+
+- Run tests:
+  ```
+  yarn test
+  ```
+
+- Build the project:
+  ```
+  yarn build
+  ```
+
+- Run end-to-end tests:
+  ```
+  yarn e2e
+  ```
+
+# Dev notes
+
+## GraphQL
+
+Altaire GraphQL playground: http://localhost:4000/graphql
+
+- Altaire is a more feature rich GraphQL client that can be used as an alternative to the built in GraphQL playground
 
 
+Key benefits of using Altair:
+- Rich feature set for testing and debugging GraphQL queries
+- User-friendly interface with syntax highlighting and auto-completion
+- Ability to set custom headers and variables
+- Support for GraphQL subscriptions
+- Offline access to schema documentation
 
-# dev notes
+To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:3001/graphql`
 
+This project includes an Altaire Collection located in: ds9-graphql-collection.agc
 
-## graphql
+For more information on Altair, please visit: https://altairgraphql.dev/docs/features/documentation
 
-http://localhost:3001/graphql
+To import the collection:
 
---fe codegen
+1. Open Altair
+2. Click on the Collections tab
+3. Click the Import button
+4. Select the ds9-graphql-collection.agc file
 
-yarn nx codegen-generate frontend
+## To run APIs
 
+- Start MongoDB and other infrastructure:
+  ```
+  docker-compose up -d
+  ```
 
-## to run apis
-
-- start mongo and other infrastructure
-`docker-compose up -d`
-
-- start the graphQL server
-`yarn nx serve apis`
+- Start the GraphQL server:
+  ```
+  yarn start
+  ```

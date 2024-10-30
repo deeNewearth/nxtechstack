@@ -1,0 +1,37 @@
+type SubscriberDetails {
+  phoneNumber: String!
+  firstName: String
+  lastName: String
+  birthDay: String
+}
+
+type Subscriber {
+  details: SubscriberDetails!
+}
+
+input SubscriberDetailsInput {
+  phoneNumber: String!
+  firstName: String
+  lastName: String
+  birthDay: String
+}
+
+type LoginResponse {
+  accessToken: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Query {
+  getSubscribers(phoneNumber: String, name: String): [Subscriber!]!
+  uptime: Float!
+  placeholder: String
+}
+
+type Mutation {
+  updateSubscriberDetails(details: SubscriberDetailsInput!): Subscriber!
+  login(credentials: LoginInput!): LoginResponse!
+}

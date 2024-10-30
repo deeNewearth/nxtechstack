@@ -1,106 +1,69 @@
 import {
   Args,
-  Context,
-  Field,
-  Int,
   Mutation,
-  ObjectType,
   Query,
-  ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { DbService } from '../common/db.service';
+import { SubscribersRepository } from './subscribers.repository';
 import {
-  SubscriberDetails,
+  Subscriber as GraphQLSubscriber,
   SubscriberDetailsInput,
-  SubscriberDto,
-} from './subscribers.dto';
+} from '../graphql/generated/graphql';
+import { Subscriber as MongooseSubscriber } from './subscriber.schema';
+import { LoggingService } from '../services/logging.service';
 
-type SubscriberDb = {
-  details: SubscriberDetails;
-};
-
-@Resolver(() => SubscriberDto)
+@Resolver('Subscriber')
 export class SubscriberResolver {
-  constructor(private dbService: DbService) {}
+  constructor(
+    private subscribersRepository: SubscribersRepository,
+    private logger: LoggingService
+  ) {}
 
-  private readonly subscribersCollection =
-    this.dbService.db.collection<SubscriberDb>('subscribers');
-
-  onModuleInit() {
-    console.log(`SubscriberResolver :OnInit`);
-
-    (async () => {
-      try {
-        await this.subscribersCollection.createIndex(
-          { 'details.phoneNumber': 1 },
-          { unique: true }
-        );
-      } catch (error) {
-        console.error('SubscriberResolver: failed creating indexes', error);
-      }
-    })();
-  }
-
-  async findSubscriberByPhoneNumber(
-    phoneNumber: string
-  ): Promise<SubscriberDto | undefined> {
-    const { details } =
-      (await this.subscribersCollection.findOne({
-        'details.phoneNumber': phoneNumber,
-      })) || {};
-
-    if (!details) return undefined;
-
-    return {
-      details,
-    };
-  }
-
-  @Query(() => [SubscriberDto])
+  @Query('getSubscribers')
   async getSubscribers(
-    @Args('phoneNumber', { type: () => String, nullable: true })
-    phoneNumber: string | null,
-    @Args('name', { type: () => String, nullable: true }) name: string | null
-  ): Promise<SubscriberDto[]> {
-    if (phoneNumber) {
-      const found = await this.findSubscriberByPhoneNumber(phoneNumber);
-
-      return found ? [found] : [];
+    @Args('phoneNumber', { type: () => String, nullable: true }) phoneNumber?: string,
+    @Args('name', { type: () => String, nullable: true }) name?: string
+  ): Promise<GraphQLSubscriber[]> {
+    this.logger.info('Fetching subscribers');
+    try {
+      const subscribers = await this.subscribersRepository.findAll(phoneNumber, name);
+      this.logger.info('Successfully fetched subscribers');
+      return this.mapToGraphQLSubscribers(subscribers);
+    } catch (error) {
+      // this.logger.error('Error fetching subscribers', error instanceof Error ? error.stack : '');
+      throw error; // Allow the error to propagate to the global exception filter
     }
-
-    throw new Error('not implemented');
   }
 
-  
-  @Mutation(() => SubscriberDto)
+  @Mutation('updateSubscriberDetails')
   async updateSubscriberDetails(
     @Args('details') details: SubscriberDetailsInput
-  ) {
-    if (!details.phoneNumber) {
-      throw new Error('phone number is required');
-    }
-
-    if (!details.phoneNumber.match(/^\d{10}$/)) {
-      throw new Error('phone number should be 10 digits');
-    }
-
-    const done = await this.subscribersCollection.updateOne(
-      { 'details.phoneNumber': details.phoneNumber },
-      { $set: { details } },
-      {
-        upsert: true,
+  ): Promise<GraphQLSubscriber> {
+    this.logger.info('Updating subscriber details');
+    try {
+      const subscriber = await this.subscribersRepository.updateDetails(details);
+      this.logger.info('Successfully updated subscriber details');
+      return this.mapToGraphQLSubscriber(subscriber);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error('Error updating subscriber details', error.stack);
       }
-    );
-
-    if (done.upsertedCount) {
-      console.debug(
-        'SubscriberResolver Added new subscriber ',
-        done.upsertedCount
-      );
+      throw error;
     }
-
-    return await this.findSubscriberByPhoneNumber(details.phoneNumber);
   }
-    
+
+  private mapToGraphQLSubscribers(subscribers: MongooseSubscriber[]): GraphQLSubscriber[] {
+    return subscribers.map(this.mapToGraphQLSubscriber);
+  }
+
+  private mapToGraphQLSubscriber(subscriber: MongooseSubscriber): GraphQLSubscriber {
+    return {
+      details: {
+        phoneNumber: subscriber.details.phoneNumber || '',
+        firstName: subscriber.details.firstName || null,
+        lastName: subscriber.details.lastName || null,
+        birthDay: subscriber.details.birthDay?.toISOString() || null,
+      },
+    };
+  }
 }

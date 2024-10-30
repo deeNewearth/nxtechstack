@@ -5,22 +5,28 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
 import { AppModule } from './app/app.module';
-//import { ConfigService } from "@nestjs/config";
+import { MigrationService } from '@kiss/be-core';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
+  dotenv.config();
+
   const app = await NestFactory.create(AppModule);
-  //const config = app.get(ConfigService);
-  app.enableCors({  // wrong!  in my case, anyway
-    origin: 'http://localhost:3000',
+  // Enable CORS
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:4000', 'http://127.0.0.1:3000', 'http://127.0.0.1:4000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
+    allowedHeaders: '*',
     credentials: true,
   });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3001;
+  await app.init();
+  // Run migrations
+  const migrationService = app.get(MigrationService);
+  await migrationService.onModuleInit();
+  const port = process.env.SERVER_PORT || 3001;
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
 }
