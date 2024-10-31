@@ -11,8 +11,15 @@ import {
 } from '../graphql/generated/graphql';
 import { Subscriber as MongooseSubscriber } from './subscriber.schema';
 import { LoggingService } from '../services/logging.service';
+import { UseGuards } from '@nestjs/common';
+import { RolesPermissionsGuard } from '../rbac/roles-permissions.guard';
+import { Roles } from '../rbac/roles.decorator';
+import { Permissions } from '../rbac/permissions.decorator';
+import { Role } from '../rbac/roles.enum';
+import { Permission } from '../rbac/permissions.enum';
 
 @Resolver('Subscriber')
+@UseGuards(RolesPermissionsGuard)
 export class SubscriberResolver {
   constructor(
     private subscribersRepository: SubscribersRepository,
@@ -20,6 +27,8 @@ export class SubscriberResolver {
   ) {}
 
   @Query('getSubscribers')
+  @Roles(Role.Admin, Role.User)
+  @Permissions(Permission.Read)  
   async getSubscribers(
     @Args('phoneNumber', { type: () => String, nullable: true }) phoneNumber?: string,
     @Args('name', { type: () => String, nullable: true }) name?: string
@@ -36,6 +45,8 @@ export class SubscriberResolver {
   }
 
   @Mutation('updateSubscriberDetails')
+  @Roles(Role.Admin)
+  @Permissions(Permission.Write)  
   async updateSubscriberDetails(
     @Args('details') details: SubscriberDetailsInput
   ): Promise<GraphQLSubscriber> {

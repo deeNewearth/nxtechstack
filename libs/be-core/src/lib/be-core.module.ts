@@ -15,6 +15,12 @@ import { LoggerModule } from './modules/logger.module';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { LoggingService } from './services/logging.service';
 import { UtilityService } from './services/utility.service';
+import { MockUserMiddleware } from './middleware/mock-user.middleware';
+import { NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { RbacModule } from './rbac/rbac.module'; 
+import { AuthService } from './auth/auth.service';
+import { Request, Response } from 'express';
+import { GqlAuthGuard } from './auth/gql-auth.guard';
 
 @Module({
   imports: [
@@ -33,10 +39,11 @@ import { UtilityService } from './services/utility.service';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: ['./libs/be-core/src/lib/graphql/schema.graphql'],
-      context: ({ req }: { req: any }) => ({ req }),
+      context: ({ req, res }: { req: Request, res: Response }) => ({ req, res }),
     }),
     DatabaseModule,
     LoggerModule,
+    RbacModule,
   ],
   providers: [
     SubscriberResolver,
@@ -50,7 +57,14 @@ import { UtilityService } from './services/utility.service';
     },
     LoggingService,
     UtilityService,
+    AuthService,
+    GqlAuthGuard
   ],
   exports: [MigrationService, DbService],
 })
-export class BeCoreModule {}
+
+export class BeCoreModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(MockUserMiddleware).forRoutes('*');
+  }
+}
