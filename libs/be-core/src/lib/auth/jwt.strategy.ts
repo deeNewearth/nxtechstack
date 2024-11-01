@@ -4,27 +4,46 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Role } from '../rbac/roles.enum';
-import { Permission } from '../rbac/permissions.enum';
+import jwksRsa from 'jwks-rsa';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private configService: ConfigService) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET_KEY'),
-    });
+  constructor(configService: ConfigService) {
+    const authStrategy = configService.get<string>('authStrategy');
+
+    if (authStrategy === 'jwt') {
+      const secretKey = configService.get<string>('jwtSecretKey');
+
+      super({
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ignoreExpiration: false,
+        secretOrKey: secretKey,
+      });
+    } else if (authStrategy === 'okta') {
+      const issuer = configService.get<string>('oktaIssuerUrl');
+      super({
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ignoreExpiration: false,
+        secretOrKeyProvider: jwksRsa.expressJwtSecret({
+          cache: true,
+          rateLimit: true,
+          jwksUri: `${issuer}/v1/keys`,
+        }),
+        issuer: issuer,
+        audience: configService.get<string>('oktaClientId'),
+        algorithms: ['RS256'],
+      });
+    }
   }
 
   async validate(payload: any) {
-    // *Assuming roles and permissions are included in the JWT payload*
     const user = {
       id: payload.sub,
-      roles: payload.roles as Role[],
-      permissions: payload.permissions as Permission[],
+      roles: payload.roles || [], // Adjust as per your token's structure
+      permissions: payload.permissions || [],
     };
 
-    return user; // Passport will attach this user to req.user
+    return user;
   }
 }
+

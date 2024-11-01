@@ -9,12 +9,10 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { MigrationService } from '@kiss/be-core';
-import * as dotenv from 'dotenv';
 import passport from 'passport';
 import session from 'express-session';
 
 async function bootstrap() {
-  dotenv.config();
 
   const app = await NestFactory.create(AppModule);
 
@@ -31,7 +29,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // *NEW CODE ADDED* - Initialize session middleware
+  // Initialize session middleware
   app.use(
     session({
       secret: process.env.SESSION_SECRET || 'secretKey',
@@ -41,7 +39,7 @@ async function bootstrap() {
     }),
   );
 
-  // *NEW CODE ADDED* - Initialize Passport middleware
+  // Initialize Passport middleware
   app.use(passport.initialize());
   app.use(passport.session());
 
