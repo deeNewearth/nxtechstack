@@ -1,4 +1,6 @@
-# Steps to get this working on the dev machine
+<img src="./DS9.jpg" alt="DS9 Logo" width="200" height="200" style="border-radius: 50%;">
+
+# Local Development Setup
 
 1. installed x-code from self serve tool
 2. installed XCode command line tools using terminal 
