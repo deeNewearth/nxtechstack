@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" style="background-color: #360f32; padding: 20px;">
 <img src="./DS9.jpg" alt="DS9 Logo" width="200" height="200" style="border-radius: 50%;">
 <h3>Local Development Setup</h3>
 </div>
