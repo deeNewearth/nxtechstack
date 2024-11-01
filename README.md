@@ -56,9 +56,9 @@ add `$HOME/.docker/bin` to PATH
     yarn start
     ```
 
-20. The GraphQL playground should be available at:
+20. The GraphQL Altair playground will be available at:
     ```
-    http://localhost:3001/graphql
+    http://localhost:4000
     ```
 
 # Additional Commands
@@ -87,7 +87,7 @@ add `$HOME/.docker/bin` to PATH
 
 ## GraphQL
 
-Altaire GraphQL playground: http://localhost:4000/graphql
+Altaire GraphQL playground: http://localhost:4000
 
 - Altaire is a more feature rich GraphQL client that can be used as an alternative to the built in GraphQL playground
 
@@ -99,7 +99,7 @@ Key benefits of using Altair:
 - Support for GraphQL subscriptions
 - Offline access to schema documentation
 
-To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:3001/graphql`
+To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:4000`
 
 This project includes an Altaire Collection located in: ds9-graphql-collection.agc
 
