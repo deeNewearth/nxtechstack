@@ -38,7 +38,7 @@ add `$HOME/.docker/bin` to PATH
 
 15. Start MongoDB and other infrastructure:
     ```
-    docker-compose up -d
+    docker compose up -d
     ```
 
 16. Install project dependencies:
@@ -149,7 +149,7 @@ To import the collection:
 
 - Start MongoDB and other infrastructure:
   ```
-  docker-compose up -d
+  docker compose up -d
   ```
 
 - Start the GraphQL server:
