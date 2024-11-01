@@ -1,7 +1,7 @@
 # Steps to get this working on the dev machine
 
 1. installed x-code from self serve tool
-2. installed XCode command line tools using terminal 
+2. installed XCode command line tools using terminal
 `xcode-select -install`
 3. installed HomeBrew from self serve tool
 4. created software install service request from the Heart icon from top right tool bar for docker desktop
@@ -11,7 +11,7 @@
 add `$HOME/.docker/bin` to PATH
 8. restart terminal
 
-9. installed nmv using homebrew 
+9. installed nmv using homebrew
 `brew install nvm`
 - please make sure to add the nvm paths and env variables to .zprofile
 
@@ -33,7 +33,7 @@ add `$HOME/.docker/bin` to PATH
 
 15. Start MongoDB and other infrastructure:
     ```
-    docker-compose up -d
+    docker compose up -d
     ```
 
 16. Install project dependencies:
@@ -116,7 +116,7 @@ To import the collection:
 
 - Start MongoDB and other infrastructure:
   ```
-  docker-compose up -d
+  docker compose up -d
   ```
 
 - Start the GraphQL server:
