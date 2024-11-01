@@ -16,12 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[2024-10-29]** Added global exception filter for consistent error handling across HTTP and GraphQL contexts.
 - **[2024-10-29]** Introduced custom error classes for validation, database, authentication, and more.
 - **[2024-10-30]** Configured CORS to allow access from AltaireGraphQL Playground running on `http://localhost:4000`.
+- **[2024-11-01]** Added Okta authentication strategy.
 
 ### Changed
 - Updated `BeCoreModule` to use Mongoose and GraphQL.
 - Modified `SubscriberResolver` to use Mongoose models and GraphQL types.
 - Updated `package.json` with new scripts and dependencies.
-- **[2024-11-01]** Refactored error handling in resolvers and repositories to use custom error classes.
+- **[2024-10-30]** Refactored error handling in resolvers and repositories to use custom error classes.
 
 ### Fixed
 - Resolved issues with GraphQL type generation.
@@ -85,3 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### CORS and Altaire GraphQL Playground Integration
 - **[2024-10-30]** Configured CORS settings to allow access from GraphQL Playground running on `http://localhost:4000`.
 - Updated `main.ts` to ensure CORS settings are correctly applied for development environments.
+
+### Okta Authentication
+- **[2024-11-01]** Added Okta, JWT, and Mock authentication strategies.
+- See [README.md](./README.md) for more details on how to configure Okta and use the different strategies.

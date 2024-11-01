@@ -40,8 +40,14 @@ add `$HOME/.docker/bin` to PATH
     ```
     yarn
     ```
+  - If this is not the first time running the project, If experiencing errors you may need to remove the node_modules folder and then run `yarn` again because there is a good change new packages have been added. If still experiencing issues, remove the yarn.lock file and try again. If still experiencing issues, please reach out to the DSS team.
+  
+    ```
+    rm -rf node_modules
+    yarn
+    ```    
 
-17. Generate GraphQL types:
+17. Generate GraphQL types (Only if you have changed the schema):
     ```
     yarn generate:types
     ```
@@ -56,10 +62,26 @@ add `$HOME/.docker/bin` to PATH
     yarn start
     ```
 
-20. The GraphQL playground should be available at:
+20. The GraphQL Altair playground will be available at:
     ```
-    http://localhost:3001/graphql
+    http://localhost:4000
     ```
+
+21. Generate a JWT token for testing:
+    ```
+    node generate-token.js
+    ```
+
+22. Steps to Use the JWT token to authenticate requests in the Altair playground (See notes below for more details):
+
+  - Adjust the .env file and set the AUTH_STRATEGY to `jwt`.
+  - Copy the JWT token
+  - Click the first icon on the left bar in the Altair playground for headers
+  - Click add new header 
+  - For the key add: `Authorization`, for the value add: `Bearer <JWT token>`
+  - Paste the JWT token into the textbox
+  - Click Save and begin making requests
+
 
 # Additional Commands
 
@@ -83,11 +105,17 @@ add `$HOME/.docker/bin` to PATH
   yarn e2e
   ```
 
+- Generate a JWT token for testing:
+  ```
+  node generate-token.js
+  ```
+
 # Dev notes
+
 
 ## GraphQL
 
-Altaire GraphQL playground: http://localhost:4000/graphql
+Altaire GraphQL playground: http://localhost:4000
 
 - Altaire is a more feature rich GraphQL client that can be used as an alternative to the built in GraphQL playground
 
@@ -99,7 +127,7 @@ Key benefits of using Altair:
 - Support for GraphQL subscriptions
 - Offline access to schema documentation
 
-To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:3001/graphql`
+To use Altair with this project, simply point it to the GraphQL endpoint: `http://localhost:4000`
 
 This project includes an Altaire Collection located in: ds9-graphql-collection.agc
 
@@ -123,3 +151,29 @@ To import the collection:
   ```
   yarn start
   ```
+
+# Auth Strategies
+
+## Configuring for mock JWT strategy
+
+- Adjust the .env file and set the AUTH_STRATEGY to `mock`.
+- Add headers for `x-mock-role` and `x-mock-permissions`
+  - `x-mock-role` can be set to `Admin` or `User`
+  - `x-mock-permissions` is a comma separated list of permissions (Read, Write, Delete, Execute)
+
+
+## Configuring Okta for Authentication 
+
+- Modify the .env file with the correct Okta settings and set the AUTH_STRATEGY to `okta`.
+- Create a new OIDC application in Okta with the following settings:
+  - Authorization server: Use the default one
+  - Grant type: Authorization Code
+  - Redirect URI: http://localhost:4000/auth/callback
+  - Response type: Code
+  - Scope: openid profile email
+
+---
+
+# For Update history see link below
+
+[Changelog](./CHANGELOG.md)
