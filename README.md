@@ -1,4 +1,6 @@
+<div align="center">
 <img src="./DS9.jpg" alt="DS9 Logo" width="200" height="200" style="border-radius: 50%;">
+</div>
 
 # Local Development Setup
 
