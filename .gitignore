@@ -49,3 +49,6 @@ out
 #app
 
 .env
+
+# SpectaQL generated docs
+public/docs/

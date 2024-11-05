@@ -33,13 +33,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         audience: configService.get<string>('oktaClientId'),
         algorithms: ['RS256'],
       });
+    } else if (authStrategy === 'mock') {
+      // For mock strategy, provide a dummy configuration
+      super({
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ignoreExpiration: false,
+        secretOrKey: 'mock-secret',
+      });
     }
   }
 
   async validate(payload: any) {
     const user = {
       id: payload.sub,
-      roles: payload.roles || [], // Adjust as per your token's structure
+      roles: payload.roles || [],
       permissions: payload.permissions || [],
     };
 

@@ -182,3 +182,41 @@ To import the collection:
 # For Update history see link below
 
 [Changelog](./CHANGELOG.md)
+
+# Documentation Generation
+
+## GraphQL API Documentation
+
+The project uses SpectaQL to generate beautiful, interactive documentation from our GraphQL schema.
+
+### Generate Documentation
+```bash
+# Generate the documentation
+yarn generate:docs
+```
+
+### View Documentation
+```bash
+# Start the documentation server
+npx spectaql -D spectaql.yml
+```
+
+The documentation will be available at:
+```
+http://localhost:4400
+```
+
+Key features of the generated documentation:
+- Interactive GraphQL schema explorer
+- Detailed type information
+- Query and mutation examples
+- Built-in search functionality
+- Responsive design for mobile and desktop
+
+### Configuration
+
+The documentation generation is configured in `spectaql.yml`. You can customize:
+- Theme and appearance
+- Logo and favicon
+- Server information
+- Documentation metadata

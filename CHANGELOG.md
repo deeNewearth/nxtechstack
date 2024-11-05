@@ -8,10 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **[2024-11-05]** Added comprehensive E-Learning GraphQL schema including:
+  - Course, Module, and Lesson management
+  - Assessment and Progress tracking
+  - Certificate management
+  - Content management and validation
+  - Enrollment management
+  - Real-time subscriptions for progress and updates
+  - Detailed documentation for all types, queries, and mutations
+- **[2024-11-05]** Integrated SpectaQL for API documentation generation:
+  - Added configuration in spectaql.yml
+  - Added documentation generation scripts
+  - Enhanced schema with detailed descriptions and examples
+  - Added interactive documentation explorer
 - Implemented Mongoose integration for database operations.
 - Created GraphQL schema for Subscriber type.
 - Added migration system for database schema changes.
-- Implemented seeding functionality for the Subscriber collection.
+- Added seeding functionality for the Subscriber collection.
 - Added CLI command for database seeding.
 - **[2024-10-29]** Added global exception filter for consistent error handling across HTTP and GraphQL contexts.
 - **[2024-10-29]** Introduced custom error classes for validation, database, authentication, and more.
@@ -19,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[2024-11-01]** Added Okta authentication strategy.
 
 ### Changed
+- **[2024-11-05]** Enhanced schema documentation with comprehensive descriptions for all operations
+- **[2024-11-05]** Updated README.md with documentation generation instructions
 - Updated `BeCoreModule` to use Mongoose and GraphQL.
 - Modified `SubscriberResolver` to use Mongoose models and GraphQL types.
 - Updated `package.json` with new scripts and dependencies.

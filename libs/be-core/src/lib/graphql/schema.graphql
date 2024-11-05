@@ -1,11 +1,35 @@
+"""
+Details about a subscriber including contact and personal information
+"""
 type SubscriberDetails {
+  """
+  The subscriber's phone number in E.164 format
+  """
   phoneNumber: String!
+  
+  """
+  The subscriber's first name
+  """
   firstName: String
+  
+  """
+  The subscriber's last name
+  """
   lastName: String
+  
+  """
+  The subscriber's birthday in ISO-8601 format
+  """
   birthDay: String
 }
 
+"""
+Represents a subscriber in the system
+"""
 type Subscriber {
+  """
+  Detailed information about the subscriber
+  """
   details: SubscriberDetails!
 }
 
@@ -25,13 +49,2410 @@ input LoginInput {
   password: String!
 }
 
-type Query {
-  getSubscribers(phoneNumber: String, name: String): [Subscriber!]!
-  uptime: Float!
-  placeholder: String
+# Scalar Types
+
+"""
+Custom scalar for handling dates and times in ISO 8601 format.
+"""
+scalar DateTime
+
+"""
+Custom scalar for handling JSON data structures.
+"""
+scalar JSONObject
+
+"""
+Custom scalar for handling uploaded files.
+"""
+scalar Upload
+
+"""
+Custom scalar for handling rich text content.
+"""
+scalar RichText
+
+# Enums
+
+"""
+Represents the status of educational content in the system.
+"""
+enum ContentStatus {
+    DRAFT
+    IN_REVIEW
+    PUBLISHED
+    ARCHIVED
+    DEPRECATED
+    SCHEDULED
 }
 
+"""
+Defines types of educational content available.
+"""
+enum ContentType {
+    VIDEO
+    TEXT
+    QUIZ
+    INTERACTIVE
+    PRESENTATION
+    ASSIGNMENT
+    DISCUSSION
+    LIVE_SESSION
+}
+
+"""
+Tracks progress status for learning activities.
+"""
+enum ProgressStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    COMPLETED
+    FAILED
+    EXPIRED
+}
+
+"""
+Defines access control levels for content.
+"""
+enum AccessLevel {
+    PUBLIC
+    PRIVATE
+    ORGANIZATION
+    PREMIUM
+    INSTRUCTOR_ONLY
+}
+
+"""
+Indicates difficulty levels for courses and content.
+"""
+enum DifficultyLevel {
+    BEGINNER
+    INTERMEDIATE
+    ADVANCED
+    EXPERT
+}
+
+"""
+Defines types of assessments available.
+"""
+enum AssessmentType {
+    QUIZ
+    EXAM
+    PROJECT
+    PEER_REVIEW
+    PRESENTATION
+    PRACTICAL
+}
+
+"""
+Tracks completion status for assessments.
+"""
+enum AssessmentStatus {
+    PENDING
+    IN_PROGRESS
+    SUBMITTED
+    GRADED
+    FAILED
+    PASSED
+}
+
+"""
+Defines types of certificates available.
+"""
+enum CertificateType {
+    COMPLETION
+    ACHIEVEMENT
+    CERTIFICATION
+    PARTICIPATION
+}
+
+"""
+Enum for certificate types.
+"""
+enum CertificationType {
+    COMPLETION
+    ACHIEVEMENT
+    CERTIFICATION
+    PARTICIPATION
+    ATTENDANCE
+}
+
+"""
+Enum for certificate status.
+"""
+enum CertificateStatus {
+    VALID
+    EXPIRED
+    REVOKED
+    PENDING
+}
+
+"""
+Enum for user roles.
+"""
+enum UserRole {
+    STUDENT
+    INSTRUCTOR
+    ADMIN
+    CONTENT_MANAGER
+    MODERATOR
+}
+
+"""
+Enum for trend directions.
+"""
+enum TrendDirection {
+    INCREASING
+    DECREASING
+    STABLE
+}
+
+"""
+Enum for warning severity levels.
+"""
+enum WarningSeverity {
+    INFO
+    WARNING
+    ERROR
+    CRITICAL
+}
+
+"""
+Enum for question types.
+"""
+enum QuestionType {
+    MULTIPLE_CHOICE
+    SINGLE_CHOICE
+    TRUE_FALSE
+    ESSAY
+    FILE_UPLOAD
+    CODE
+}
+
+"""
+Enum for achievement types.
+"""
+enum AchievementType {
+    COURSE_COMPLETION
+    SKILL_MASTERY
+    PARTICIPATION
+    PERFECT_SCORE
+    MILESTONE
+}
+
+"""
+Enum for course update types.
+"""
+enum CourseUpdateType {
+    CONTENT_UPDATED
+    STATUS_CHANGED
+    METADATA_UPDATED
+    ENROLLMENT_CHANGED
+    ASSESSMENT_ADDED
+    ASSESSMENT_UPDATED
+}
+
+"""
+Enum for duration units.
+"""
+enum DurationUnit {
+    MINUTES
+    HOURS
+    DAYS
+    WEEKS
+}
+
+# Interfaces
+
+"""
+Base interface for all node types in the system.
+"""
+interface Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Interface for entities requiring audit tracking.
+"""
+interface Auditable {
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    auditLog: [AuditEntry!]!
+}
+
+"""
+Interface for searchable content.
+"""
+interface Searchable {
+    title: String!
+    description: String
+    tags: [String!]
+    searchMetadata: JSONObject
+}
+
+"""
+Interface for content requiring access control.
+"""
+interface AccessControlled {
+    accessLevel: AccessLevel!
+    accessGroups: [String!]!
+    visibility: Boolean!
+}
+
+"""
+Interface for trackable learning progress.
+"""
+interface Trackable {
+    progress: Float!
+    startedAt: DateTime
+    completedAt: DateTime
+    lastAccessedAt: DateTime
+}
+
+"""
+Base interface for all error types to ensure consistency.
+"""
+interface Error {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Base interface for all metadata types to ensure consistency.
+"""
+interface Metadata {
+    customFields: JSONObject
+    lastUpdated: DateTime
+    version: Int
+}
+
+
+"""
+Base input for content operations.
+"""
+input BaseContentInput {
+    title: String!
+    description: String
+    type: ContentType!
+    duration: Int
+    language: String
+    accessibility: AccessibilityInput
+    metadata: ContentMetadataInput
+}
+
+# Core Types
+
+"""
+Represents a complete course in the learning platform.
+"""
+type Course implements Node & Auditable & Searchable & AccessControlled {
+    id: ID!
+    title: String!
+    description: String!
+    modules: [Module!]!
+    instructors: [Instructor!]!
+    enrollments: [Enrollment!]!
+    status: ContentStatus!
+    difficultyLevel: DifficultyLevel!
+    duration: Int!
+    prerequisites: [Course!]
+    learningObjectives: [String!]!
+    skills: [Skill!]!
+    assessments: [Assessment!]!
+    certificate: Certificate
+    metadata: CourseMetadata!
+    reviews: [Review!]!
+    rating: Float
+    accessLevel: AccessLevel!
+    accessGroups: [String!]!
+    visibility: Boolean!
+    tags: [String!]
+    searchMetadata: JSONObject
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    auditLog: [AuditEntry!]!
+    analytics: CourseAnalytics!
+}
+
+"""
+Represents a module within a course.
+"""
+type Module implements Node & Auditable & Searchable {
+    id: ID!
+    title: String!
+    description: String!
+    lessons: [Lesson!]!
+    order: Int!
+    duration: Int!
+    status: ContentStatus!
+    prerequisites: [Module!]
+    learningObjectives: [String!]!
+    metadata: ModuleMetadata!
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    auditLog: [AuditEntry!]!
+    tags: [String!]
+    searchMetadata: JSONObject
+}
+
+"""
+Represents a lesson within a module.
+"""
+type Lesson implements Node & Auditable & Searchable & AccessControlled {
+    id: ID!
+    title: String!
+    description: String!
+    content: Content!
+    duration: Int!
+    order: Int!
+    status: ContentStatus!
+    type: ContentType!
+    prerequisites: [Lesson!]
+    assessments: [Assessment!]!
+    metadata: LessonMetadata!
+    accessLevel: AccessLevel!
+    accessGroups: [String!]!
+    visibility: Boolean!
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    auditLog: [AuditEntry!]!
+    tags: [String!]
+    searchMetadata: JSONObject
+}
+
+"""
+Represents content within a lesson.
+"""
+type Content {
+    id: ID!
+    type: ContentType!
+    title: String!
+    description: String
+    data: JSONObject!
+    duration: Int
+    url: String
+    thumbnail: String
+    interactivityType: String
+    format: String
+    language: String
+    accessibility: AccessibilityInfo
+    version: String
+    metadata: ContentMetadata!
+}
+
+"""
+Represents an assessment in the system.
+"""
+type Assessment implements Node & Auditable {
+    id: ID!
+    title: String!
+    description: String!
+    type: AssessmentType!
+    questions: [Question!]!
+    passingScore: Float!
+    maxAttempts: Int!
+    timeLimit: Int
+    dueDate: DateTime
+    weight: Float
+    rubric: Rubric
+    metadata: AssessmentMetadata!
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    auditLog: [AuditEntry!]!
+}
+
+"""
+Represents a user's enrollment in a course.
+"""
+type Enrollment implements Node & Trackable {
+    id: ID!
+    user: User!
+    course: Course!
+    status: ProgressStatus!
+    progress: Float!
+    startDate: DateTime!
+    completionDate: DateTime
+    lastAccessedAt: DateTime
+    certificate: Certificate
+    assessmentResults: [AssessmentResult!]!
+    metadata: EnrollmentMetadata!
+    startedAt: DateTime!
+    completedAt: DateTime
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents a user in the system.
+"""
+type User implements Node & Auditable {
+    id: ID!
+    email: String!
+    firstName: String!
+    lastName: String!
+    role: UserRole!
+    enrollments: [Enrollment!]!
+    preferences: UserPreferences!
+    achievements: [Achievement!]!
+    skills: [UserSkill!]!
+    createdBy: String!
+    updatedBy: String
+    version: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    auditLog: [AuditEntry!]!
+}
+
+"""
+Represents analytics data for a course.
+"""
+type CourseAnalytics {
+    totalEnrollments: Int!
+    activeEnrollments: Int!
+    completionRate: Float!
+    averageProgress: Float!
+    averageTimeToComplete: Int
+    dropoutRate: Float!
+    assessmentStats: AssessmentStats!
+    engagementMetrics: EngagementMetrics!
+    revenueMetrics: RevenueMetrics
+    trendsData: TrendsData!
+}
+
+"""
+Represents assessment statistics.
+"""
+type AssessmentStats {
+    averageScore: Float!
+    passRate: Float!
+    submissionRate: Float!
+    averageAttempts: Float!
+}
+
+"""
+Represents engagement metrics for a course.
+"""
+type EngagementMetrics {
+    averageSessionDuration: Int!
+    averageSessionsPerUser: Float!
+    contentCompletionRates: [CompletionRate!]!
+    discussionParticipationRate: Float!
+}
+
+"""
+Represents completion rate data.
+"""
+type CompletionRate {
+    contentId: ID!
+    rate: Float!
+    averageTimeSpent: Int!
+}
+
+"""
+Represents trend data over time.
+"""
+type TrendsData {
+    enrollmentTrend: [TimeSeriesData!]!
+    completionTrend: [TimeSeriesData!]!
+    engagementTrend: [TimeSeriesData!]!
+}
+
+"""
+Represents time series data points.
+"""
+type TimeSeriesData {
+    timestamp: DateTime!
+    value: Float!
+    trend: TrendDirection!
+}
+
+"""
+Represents aggregated course data.
+"""
+type CourseAggregations {
+    byDifficulty: [DifficultyCount!]!
+    byStatus: [StatusCount!]!
+    byEnrollmentCount: [EnrollmentRange!]!
+    byCompletionRate: [CompletionRateRange!]!
+    byRating: [RatingRange!]!
+}
+
+# Audit Types
+
+"""
+Represents an audit entry for tracking changes.
+Implements comprehensive audit trail functionality.
+"""
+type AuditEntry implements Node {
+    id: ID!
+    entityId: ID!
+    entityType: String!
+    action: String!
+    userId: String!
+    timestamp: DateTime!
+    changes: [AuditChange!]
+    metadata: JSONObject
+    ipAddress: String
+    userAgent: String
+    sessionId: String
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents a single change within an audit entry.
+Used to track specific field changes in audited entities.
+"""
+type AuditChange {
+    field: String!
+    previousValue: String
+    newValue: String
+    changeType: String!
+    metadata: JSONObject
+}
+
+"""
+Represents standard Relay pagination information.
+"""
+type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+}
+
+"""
+Represents a connection type for enrollments.
+"""
+type EnrollmentConnection {
+    edges: [EnrollmentEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+"""
+Represents an enrollment edge.
+"""
+type EnrollmentEdge {
+    node: Enrollment!
+    cursor: String!
+}
+
+"""
+Represents an instructor.
+"""
+type Instructor implements Node {
+    id: ID!
+    user: User!
+    biography: String
+    expertise: [String!]!
+    courses: [Course!]!
+    rating: Float
+    reviews: [Review!]!
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents a skill that can be learned.
+"""
+type Skill {
+    id: ID!
+    name: String!
+    description: String!
+    level: DifficultyLevel!
+    category: String!
+    prerequisites: [Skill!]
+}
+
+"""
+Represents a course review.
+"""
+type Review implements Node {
+    id: ID!
+    rating: Float!
+    content: String!
+    user: User!
+    course: Course!
+    helpful: Int!
+    reported: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents a question in an assessment.
+"""
+type Question {
+    id: ID!
+    type: QuestionType!
+    content: String!
+    options: [QuestionOption!]
+    correctAnswer: [String!]!
+    points: Int!
+    explanation: String
+}
+
+"""
+Represents an option for a question.
+"""
+type QuestionOption {
+    id: ID!
+    content: String!
+    isCorrect: Boolean!
+}
+
+"""
+Represents a rubric for assessment.
+"""
+type Rubric {
+    id: ID!
+    criteria: [RubricCriterion!]!
+    maxScore: Float!
+    passingScore: Float!
+}
+
+"""
+Represents a criterion in a rubric.
+"""
+type RubricCriterion {
+    id: ID!
+    name: String!
+    description: String!
+    maxPoints: Float!
+    levels: [RubricLevel!]!
+}
+
+"""
+Represents a level in a rubric criterion.
+"""
+type RubricLevel {
+    points: Float!
+    description: String!
+}
+
+"""
+Represents a rubric score.
+"""
+type RubricScore {
+    criterionId: ID!
+    score: Float!
+    feedback: String
+}
+
+"""
+Represents user preferences.
+"""
+type UserPreferences {
+    language: String!
+    timezone: String!
+    emailNotifications: Boolean!
+    pushNotifications: Boolean!
+    themePreference: String!
+}
+
+"""
+Represents a user achievement.
+"""
+type Achievement implements Node {
+    id: ID!
+    name: String!
+    description: String!
+    type: AchievementType!
+    awardedAt: DateTime!
+    criteria: JSONObject!
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents a user's skill level.
+"""
+type UserSkill {
+    skill: Skill!
+    level: DifficultyLevel!
+    verifiedAt: DateTime
+    endorsements: Int!
+}
+
+"""
+Represents accessibility information.
+"""
+type AccessibilityInfo {
+    hasClosedCaptions: Boolean!
+    hasTranscript: Boolean!
+    hasAudioDescription: Boolean!
+    hasSignLanguage: Boolean!
+    wcagLevel: String!
+    languages: [String!]!
+}
+
+"""
+Represents a learning path.
+"""
+type LearningPath implements Node {
+    id: ID!
+    name: String!
+    description: String!
+    courses: [Course!]!
+    prerequisites: [LearningPath!]
+    duration: Int!
+    difficulty: DifficultyLevel!
+    createdAt: DateTime!
+    updatedAt: DateTime
+}
+
+"""
+Represents configuration for document generation.
+"""
+type GenerationConfig {
+    id: ID!
+    format: String!
+    template: String!
+    version: String!
+    parameters: JSONObject!
+    validation: ValidationConfig!
+}
+
+"""
+Represents validation configuration.
+"""
+type ValidationConfig {
+    rules: [ValidationRule!]!
+    severity: WarningSeverity!
+    customValidation: JSONObject
+}
+
+"""
+Represents a validation rule.
+"""
+type ValidationRule {
+    name: String!
+    condition: String!
+    message: String!
+    severity: WarningSeverity!
+    metadata: JSONObject
+}
+
+# Metadata Types
+
+"""
+Metadata for courses.
+"""
+type CourseMetadata {
+    language: String!
+    estimatedDuration: Int!
+    skillLevel: DifficultyLevel!
+    requirements: [String!]!
+    targetAudience: [String!]!
+    certificationTrack: Boolean!
+    customFields: JSONObject
+}
+
+"""
+Metadata for modules.
+"""
+type ModuleMetadata {
+    estimatedDuration: Int!
+    learningObjectives: [String!]!
+    resourceCount: Int!
+    customFields: JSONObject
+}
+
+"""
+Metadata for lessons.
+"""
+type LessonMetadata {
+    interactivityLevel: String!
+    resourceType: String!
+    technicalRequirements: [String!]!
+    customFields: JSONObject
+}
+
+
+"""
+Metadata for certificates.
+"""
+type CertificateMetadata {
+    templateId: String!
+    serialNumber: String!
+    issuerInfo: JSONObject!
+    customFields: JSONObject
+    verificationUrl: String!
+}
+
+"""
+Metadata for progress tracking.
+"""
+type ProgressMetadata {
+    lastCheckpoint: String
+    timePerModule: JSONObject
+    deviceInfo: JSONObject
+    customFields: JSONObject
+}
+
+"""
+Metadata for enrollments.
+"""
+type EnrollmentMetadata {
+    enrollmentSource: String!
+    paymentInfo: JSONObject
+    promotionalCode: String
+    customFields: JSONObject
+}
+
+"""
+Metadata for assessments.
+"""
+type AssessmentMetadata {
+    gradeScale: JSONObject
+    reviewers: [String!]
+    submissionGuidelines: String
+    customFields: JSONObject
+}
+
+"""
+Metadata for content.
+"""
+type ContentMetadata {
+    sourceSystem: String
+    lastSynced: DateTime
+    technicalDetails: JSONObject
+    customFields: JSONObject
+}
+
+# Connection Types
+
+"""
+Connection type for paginated course results.
+"""
+type CourseConnection {
+    edges: [CourseEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+    aggregations: CourseAggregations
+}
+
+"""
+Connection type for paginated module results.
+"""
+type ModuleConnection {
+    edges: [ModuleEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+"""
+Connection type for paginated lesson results.
+"""
+type LessonConnection {
+    edges: [LessonEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+# Edge Types
+
+"""
+Edge type for course connections.
+"""
+type CourseEdge {
+    node: Course!
+    cursor: String!
+}
+
+"""
+Edge type for module connections.
+"""
+type ModuleEdge {
+    node: Module!
+    cursor: String!
+}
+
+"""
+Edge type for lesson connections.
+"""
+type LessonEdge {
+    node: Lesson!
+    cursor: String!
+}
+
+# Input Types
+
+"""
+Base fields for all metadata types.
+"""
+input BaseMetadataInput {
+    customFields: JSONObject
+    version: Int
+}
+
+"""
+Input for creating a new course.
+"""
+input CreateCourseInput {
+    title: String!
+    description: String!
+    difficultyLevel: DifficultyLevel!
+    duration: Int!
+    learningObjectives: [String!]!
+    prerequisites: [ID!]
+    accessLevel: AccessLevel!
+    metadata: CourseMetadataInput!
+}
+
+"""
+Input for updating a course.
+"""
+input UpdateCourseInput {
+    id: ID!
+    title: String
+    description: String
+    difficultyLevel: DifficultyLevel
+    duration: Int
+    learningObjectives: [String!]
+    prerequisites: [ID!]
+    accessLevel: AccessLevel
+    metadata: CourseMetadataInput
+}
+
+"""
+Input for creating a new module.
+"""
+input CreateModuleInput {
+    courseId: ID!
+    title: String!
+    description: String!
+    order: Int!
+    duration: Int!
+    learningObjectives: [String!]!
+    metadata: ModuleMetadataInput!
+}
+
+"""
+Input for scheduling a course.
+"""
+input ScheduleCourseInput {
+    id: ID!
+    startDate: DateTime!
+    endDate: DateTime!
+    enrollmentDeadline: DateTime
+    timezone: String!
+}
+
+"""
+Input for updating a module.
+"""
+input UpdateModuleInput {
+    id: ID!
+    title: String
+    description: String
+    learningObjectives: [String!]
+    duration: Int
+    metadata: ModuleMetadataInput
+}
+
+"""
+Input for creating a new lesson.
+"""
+input CreateLessonInput {
+    moduleId: ID!
+    title: String!
+    description: String!
+    content: ContentInput!
+    duration: Int!
+    type: ContentType!
+    order: Int!
+    prerequisites: [ID!]
+    metadata: LessonMetadataInput!
+}
+
+"""
+Input for uploading new content.
+"""
+input ContentInput {
+    type: ContentType!
+    title: String!
+    description: String
+    file: Upload
+    url: String
+    data: JSONObject
+    duration: Int
+    language: String
+    accessibility: AccessibilityInput
+}
+
+"""
+Input for grading an assessment.
+"""
+input GradeAssessmentInput {
+    assessmentId: ID!
+    enrollmentId: ID!
+    score: Float!
+    feedback: String
+    gradedBy: ID!
+    rubricScores: [RubricScoreInput!]
+}
+
+"""
+Input for transferring an enrollment.
+"""
+input TransferEnrollmentInput {
+    enrollmentId: ID!
+    newUserId: ID!
+    reason: String!
+    maintainProgress: Boolean!
+}
+
+"""
+Input for tracking content progress.
+"""
+input ContentProgressInput {
+    enrollmentId: ID!
+    contentId: ID!
+    progressPercentage: Float!
+    timeSpent: Int!
+    completionStatus: ProgressStatus!
+}
+
+"""
+Input for updating a learning path.
+"""
+input UpdateLearningPathInput {
+    id: ID!
+    userId: ID!
+    courseIds: [ID!]!
+    deadline: DateTime
+    priority: Int
+}
+
+"""
+Input for course metadata.
+"""
+input CourseMetadataInput {
+    language: String!
+    estimatedDuration: Int!
+    requirements: [String!]!
+    targetAudience: [String!]!
+    certificationTrack: Boolean
+    customFields: JSONObject
+}
+
+"""
+Input for module metadata.
+"""
+input ModuleMetadataInput {
+    estimatedDuration: Int!
+    learningObjectives: [String!]!
+    customFields: JSONObject
+}
+
+"""
+Input for lesson metadata.
+"""
+input LessonMetadataInput {
+    interactivityLevel: String!
+    resourceType: String!
+    technicalRequirements: [String!]
+    customFields: JSONObject
+}
+
+"""
+Input for content metadata.
+"""
+input ContentMetadataInput {
+    sourceSystem: String
+    technicalDetails: JSONObject
+    customFields: JSONObject
+}
+
+"""
+Input for creating an enrollment.
+"""
+input CreateEnrollmentInput {
+    userId: ID!
+    courseId: ID!
+    startDate: DateTime!
+    metadata: JSONObject
+}
+
+"""
+Input for updating progress.
+"""
+input UpdateProgressInput {
+    enrollmentId: ID!
+    progress: Float!
+    completedItems: [ID!]!
+    timeSpent: Int!
+}
+
+"""
+Input for submitting an assessment.
+"""
+input SubmitAssessmentInput {
+    enrollmentId: ID!
+    assessmentId: ID!
+    answers: [AssessmentAnswer!]!
+    timeSpent: Int!
+}
+
+"""
+Input for assessment answers.
+"""
+input AssessmentAnswer {
+    questionId: ID!
+    answer: [String!]!
+}
+
+"""
+Input for updating a lesson.
+"""
+input UpdateLessonInput {
+    id: ID!
+    title: String
+    description: String
+    content: ContentInput
+    duration: Int
+    metadata: LessonMetadataInput
+}
+
+"""
+Input for creating an assessment.
+"""
+input CreateAssessmentInput {
+    title: String!
+    description: String!
+    type: AssessmentType!
+    questions: [QuestionInput!]!
+    passingScore: Float!
+    maxAttempts: Int!
+    timeLimit: Int
+    dueDate: DateTime
+    weight: Float
+    rubric: RubricInput
+}
+
+"""
+Input for updating an assessment.
+"""
+input UpdateAssessmentInput {
+    id: ID!
+    title: String
+    description: String
+    passingScore: Float
+    maxAttempts: Int
+    timeLimit: Int
+    dueDate: DateTime
+    weight: Float
+    rubric: RubricInput
+}
+
+"""
+Input for accessibility settings.
+"""
+input AccessibilityInput {
+    hasClosedCaptions: Boolean!
+    hasTranscript: Boolean!
+    hasAudioDescription: Boolean!
+    hasSignLanguage: Boolean!
+    wcagLevel: String!
+    languages: [String!]!
+}
+
+"""
+Input for course searching and filtering.
+"""
+input CourseSearchFilter {
+    query: String
+    status: [ContentStatus!]
+    difficultyLevel: [DifficultyLevel!]
+    instructorIds: [ID!]
+    minRating: Float
+    maxRating: Float
+    priceRange: PriceRangeInput
+    duration: DurationRangeInput
+    tags: [String!]
+}
+
+"""
+Input for pagination.
+"""
+input PaginationInput {
+    first: Int
+    after: String
+    last: Int
+    before: String
+}
+
+"""
+Input for date ranges.
+"""
+input DateRangeInput {
+    startDate: DateTime!
+    endDate: DateTime!
+}
+
+"""
+Input for rubric scores.
+"""
+input RubricScoreInput {
+    criterionId: ID!
+    score: Float!
+    feedback: String
+}
+
+"""
+Input type for creating or updating questions.
+"""
+input QuestionInput {
+    type: QuestionType!
+    content: String!
+    options: [QuestionOptionInput!]
+    correctAnswer: [String!]!
+    points: Int!
+    explanation: String
+}
+
+"""
+Input type for question options.
+"""
+input QuestionOptionInput {
+    content: String!
+    isCorrect: Boolean!
+}
+
+"""
+Input type for creating or updating rubrics.
+"""
+input RubricInput {
+    criteria: [RubricCriterionInput!]!
+    maxScore: Float!
+    passingScore: Float!
+}
+
+"""
+Input type for rubric criteria.
+"""
+input RubricCriterionInput {
+    name: String!
+    description: String!
+    maxPoints: Float!
+    levels: [RubricLevelInput!]!
+}
+
+"""
+Input type for rubric levels.
+"""
+input RubricLevelInput {
+    points: Float!
+    description: String!
+}
+
+"""
+Input type for price range filtering.
+"""
+input PriceRangeInput {
+    min: Float
+    max: Float
+    currency: String = "USD"
+}
+
+"""
+Input type for duration range filtering.
+"""
+input DurationRangeInput {
+    min: Int
+    max: Int
+    unit: DurationUnit = MINUTES
+}
+
+# Types for Subscriptions
+
+"""
+Represents real-time enrollment progress updates.
+"""
+type EnrollmentProgress {
+    enrollment: Enrollment!
+    previousProgress: Float!
+    currentProgress: Float!
+    updatedAt: DateTime!
+    updatedBy: String!
+    completedItems: [ID!]!
+}
+
+
+"""
+Input for uploading new content with comprehensive fields.
+"""
+input UploadContentInput {
+    title: String!
+    description: String!
+    type: ContentType!
+    file: Upload
+    url: String
+    data: JSONObject
+    duration: Int
+    thumbnail: String
+    interactivityType: String
+    format: String
+    language: String
+    accessibility: AccessibilityInput
+    version: String
+    metadata: ContentMetadataInput
+}
+
+"""
+Input for updating existing content with comprehensive fields.
+"""
+input UpdateContentInput {
+    id: ID!
+    title: String
+    description: String
+    type: ContentType
+    data: JSONObject
+    duration: Int
+    url: String
+    thumbnail: String
+    interactivityType: String
+    format: String
+    language: String
+    accessibility: AccessibilityInput
+    version: String
+    metadata: ContentMetadataInput
+}
+
+"""
+Represents real-time course update information.
+"""
+type CourseUpdate {
+    course: Course!
+    updateType: CourseUpdateType!
+    updatedFields: [String!]!
+    updatedAt: DateTime!
+    updatedBy: String!
+}
+
+# Missing Analytics Types
+
+"""
+Represents revenue metrics for a course.
+"""
+type RevenueMetrics {
+    totalRevenue: Float!
+    averageRevenuePerStudent: Float!
+    revenueByPeriod: [RevenuePeriod!]!
+    refundRate: Float!
+    lifetimeValue: Float!
+}
+
+"""
+Represents revenue data for a specific period.
+"""
+type RevenuePeriod {
+    period: String!
+    revenue: Float!
+    enrollments: Int!
+    averageRevenuePerEnrollment: Float!
+}
+
+# Missing Aggregation Types
+
+"""
+Represents count by difficulty level.
+"""
+type DifficultyCount {
+    difficulty: DifficultyLevel!
+    count: Int!
+    percentage: Float!
+}
+
+"""
+Represents count by status.
+"""
+type StatusCount {
+    status: ContentStatus!
+    count: Int!
+    percentage: Float!
+}
+
+"""
+Represents enrollment count ranges.
+"""
+type EnrollmentRange {
+    min: Int!
+    max: Int!
+    count: Int!
+    courses: [Course!]!
+}
+
+"""
+Represents completion rate ranges.
+"""
+type CompletionRateRange {
+    min: Float!
+    max: Float!
+    count: Int!
+    courses: [Course!]!
+}
+
+"""
+Represents rating ranges.
+"""
+type RatingRange {
+    min: Float!
+    max: Float!
+    count: Int!
+    courses: [Course!]!
+}
+
+
+# Payload Types
+
+"""
+Response payload for course operations.
+"""
+type CoursePayload {
+    success: Boolean!
+    course: Course
+    errors: [CourseError!]
+}
+
+"""
+Response payload for module operations.
+"""
+type ModulePayload {
+    success: Boolean!
+    module: Module
+    errors: [ModuleError!]
+}
+
+"""
+Response payload for lesson operations.
+"""
+type LessonPayload {
+    success: Boolean!
+    lesson: Lesson
+    errors: [LessonError!]
+}
+
+"""
+Response payload for content validation operations.
+"""
+type ContentValidationPayload {
+    success: Boolean!
+    validation: ContentValidation
+    errors: [ContentError!]
+}
+
+"""
+Warning type for content validation.
+"""
+type ContentValidationWarning {
+    code: String!
+    message: String!
+    severity: WarningSeverity!
+    details: JSONObject
+}
+
+"""
+Configuration for validation rules.
+"""
+type ValidationRuleConfig {
+    enabled: Boolean!
+    severity: WarningSeverity!
+    parameters: JSONObject
+    customValidation: String
+}
+
+"""
+Response payload for certificate operations.
+"""
+type CertificatePayload {
+    success: Boolean!
+    certificate: Certificate
+    errors: [CertificateError!]
+}
+
+"""
+Response payload for progress tracking operations.
+"""
+type ProgressPayload {
+    success: Boolean!
+    progress: Progress
+    errors: [ProgressError!]
+}
+
+"""
+Response payload for learning path operations.
+"""
+type LearningPathPayload {
+    success: Boolean!
+    learningPath: LearningPath
+    errors: [LearningPathError!]
+}
+
+"""
+Response payload for certificate validation operations.
+"""
+type CertificateValidationPayload {
+    success: Boolean!
+    isValid: Boolean!
+    certificate: Certificate
+    validationDetails: JSONObject
+    errors: [CertificateError!]
+}
+
+"""
+Response payload for assessment operations.
+"""
+type AssessmentPayload {
+    success: Boolean!
+    assessment: Assessment
+    errors: [AssessmentError!]
+}
+
+"""
+Response payload for content operations.
+"""
+type ContentPayload {
+    success: Boolean!
+    content: Content
+    errors: [ContentError!]
+}
+
+"""
+Result of content processing.
+"""
+type ContentProcessingResult {
+    success: Boolean!
+    processingTime: Int!
+    outputUrl: String
+    transformations: [String!]
+    metadata: JSONObject
+}
+
+"""
+Response payload for enrollment operations.
+"""
+type EnrollmentPayload {
+    success: Boolean!
+    enrollment: Enrollment
+    errors: [EnrollmentError!]
+}
+
+"""
+Response payload for assessment result operations.
+"""
+type AssessmentResultPayload {
+    success: Boolean!
+    result: AssessmentResult
+    errors: [AssessmentError!]
+}
+
+"""
+Represents a content validation result.
+"""
+type ContentValidation {
+    isValid: Boolean!
+    errors: [ContentValidationError!]
+    warnings: [ContentValidationWarning!]
+    metadata: JSONObject
+}
+
+"""
+Represents detailed assessment results.
+"""
+type AssessmentResult {
+    id: ID!
+    assessment: Assessment!
+    enrollment: Enrollment!
+    score: Float!
+    passed: Boolean!
+    attemptNumber: Int!
+    startedAt: DateTime!
+    completedAt: DateTime!
+    gradedBy: User
+    feedback: String
+    rubricScores: [RubricScore!]
+}
+
+"""
+Represents a certificate issued for course completion.
+"""
+type Certificate {
+    id: ID!
+    type: CertificationType!
+    issuedTo: User!
+    course: Course!
+    issuedAt: DateTime!
+    expiresAt: DateTime
+    validationHash: String!
+    metadata: CertificateMetadata!
+    status: CertificateStatus!
+    issuer: User!
+}
+
+"""
+Represents detailed progress tracking.
+"""
+type Progress {
+    id: ID!
+    enrollment: Enrollment!
+    lesson: Lesson
+    module: Module
+    status: ProgressStatus!
+    percentage: Float!
+    lastActivity: DateTime!
+    timeSpent: Int!
+    completedItems: Int!
+    totalItems: Int!
+    metadata: ProgressMetadata!
+}
+
+# Error Types
+
+
+"""
+Base type for operation errors.
+"""
+type OperationError implements Error {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+    timestamp: DateTime!
+    operation: String!
+}
+
+
+"""
+Base type for validation errors.
+"""
+type ValidationError implements Error {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+    severity: WarningSeverity!
+    validationType: String!
+}
+
+"""
+Base type for processing errors.
+"""
+type ProcessingError implements Error {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+    processId: String!
+    failurePoint: String!
+}
+
+"""
+Error type for content validation issues.
+"""
+type ContentValidationError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for certificate operations.
+"""
+type CertificateError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for progress tracking operations.
+"""
+type ProgressError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for course-related operations.
+"""
+type CourseError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for module-related operations.
+"""
+type ModuleError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for lesson-related operations.
+"""
+type LessonError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for content-related operations.
+"""
+type ContentError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for learning path operations.
+"""
+type LearningPathError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for assessment-related operations.
+"""
+type AssessmentError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+"""
+Error type for enrollment-related operations.
+"""
+type EnrollmentError {
+    code: String!
+    message: String!
+    field: String
+    details: JSONObject
+}
+
+# Query Type
+
+type Query {
+    """
+    Retrieves a list of subscribers based on optional filtering criteria.
+    If no filters are provided, returns all subscribers.
+    
+    @param phoneNumber - Optional E.164 format phone number to filter subscribers
+    @param name - Optional name to filter subscribers by first or last name
+    """
+    getSubscribers(phoneNumber: String, name: String): [Subscriber!]!
+
+    """
+    Returns the current uptime of the server in seconds.
+    Useful for health checks and monitoring.
+    """
+    uptime: Float!
+
+    """
+    Placeholder query for testing purposes.
+    Will be deprecated in future versions.
+    """
+    placeholder: String
+
+    """
+    Retrieves detailed information about a specific course by its unique identifier.
+    Returns comprehensive course data including modules, enrollments, and analytics.
+    
+    @param id - Unique identifier of the course
+    @throws NotFoundError if course doesn't exist
+    @throws AuthorizationError if user lacks permission to view the course
+    """
+    course(id: ID!): CoursePayload!
+
+    """
+    Performs an advanced search across all courses based on multiple criteria.
+    Supports pagination and returns aggregated statistics about the search results.
+    
+    @param filter - Optional search criteria including text, difficulty level, ratings, etc.
+    @param pagination - Optional pagination parameters for result set control
+    @returns CourseConnection with edges, pagination info, and result aggregations
+    """
+    searchCourses(filter: CourseSearchFilter, pagination: PaginationInput): CourseConnection!
+
+    """
+    Retrieves all enrollments for a specific user with optional status filtering.
+    Results are paginated and include detailed progress information.
+    
+    @param userId - ID of the user whose enrollments to retrieve
+    @param status - Optional filter for enrollment status
+    @param pagination - Optional pagination parameters
+    @throws AuthorizationError if requester lacks permission to view user's enrollments
+    """
+    userEnrollments(userId: ID!, status: ProgressStatus, pagination: PaginationInput): EnrollmentConnection!
+
+    """
+    Retrieves comprehensive analytics data for a specific course within a date range.
+    Includes enrollment metrics, completion rates, assessment statistics, and revenue data.
+    
+    @param courseId - ID of the course to analyze
+    @param dateRange - Optional date range for filtering analytics data
+    @throws NotFoundError if course doesn't exist
+    @throws AuthorizationError if user lacks analytics access permission
+    """
+    courseAnalytics(courseId: ID!, dateRange: DateRangeInput): CourseAnalytics!
+    
+    """
+    Validates the authenticity and current status of a certificate.
+    Verifies digital signatures and checks revocation status.
+    
+    @param id - Unique identifier of the certificate to validate
+    @returns Validation status and detailed certificate information if valid
+    """
+    validateCertificate(id: ID!): CertificateValidationPayload!
+
+    """
+    Retrieves detailed progress information for a specific enrollment.
+    Includes completion status, time spent, and achievement data.
+    
+    @param enrollmentId - ID of the enrollment to check progress
+    @throws NotFoundError if enrollment doesn't exist
+    @throws AuthorizationError if user lacks permission to view progress
+    """
+    enrollmentProgress(enrollmentId: ID!): ProgressPayload!
+
+    """
+    Validates content against accessibility standards and platform requirements.
+    Performs comprehensive checks for compliance and quality assurance.
+    
+    @param id - ID of the content to validate
+    @returns Validation results including warnings and errors if any
+    """
+    contentValidation(id: ID!): ContentValidationPayload!
+}
+
+# Mutation Type
+
 type Mutation {
-  updateSubscriberDetails(details: SubscriberDetailsInput!): Subscriber!
-  login(credentials: LoginInput!): LoginResponse!
+    """
+    Updates subscriber details with new information.
+    All fields are optional except phoneNumber which is required for identification.
+    
+    @param details - Updated subscriber information
+    @throws ValidationError if phone number format is invalid
+    @throws NotFoundError if subscriber doesn't exist
+    """
+    updateSubscriberDetails(details: SubscriberDetailsInput!): Subscriber!
+
+    """
+    Authenticates a user and returns a JWT token for subsequent requests.
+    Supports multiple authentication strategies based on configuration.
+    
+    @param credentials - User login credentials
+    @throws AuthenticationError if credentials are invalid
+    @throws RateLimitError if too many failed attempts
+    """
+    login(credentials: LoginInput!): LoginResponse!
+
+    """
+    Creates a new course with specified details.
+    Initializes all necessary course components and metadata.
+    
+    @param input - Course creation details including title, description, and settings
+    @throws ValidationError if required fields are missing or invalid
+    @throws AuthorizationError if user lacks course creation permission
+    """
+    createCourse(input: CreateCourseInput!): CoursePayload!
+
+    """
+    Updates an existing course with new information.
+    Only provided fields will be updated, others remain unchanged.
+    
+    @param input - Updated course information
+    @throws NotFoundError if course doesn't exist
+    @throws ValidationError if updates are invalid
+    @throws AuthorizationError if user lacks course update permission
+    """
+    updateCourse(input: UpdateCourseInput!): CoursePayload!
+
+    """
+    Creates a new module within a specified course.
+    Automatically handles module ordering and course structure updates.
+    
+    @param input - Module creation details including course association
+    @throws ValidationError if module details are invalid
+    @throws NotFoundError if associated course doesn't exist
+    """
+    createModule(input: CreateModuleInput!): ModulePayload!
+
+    """
+    Creates a new enrollment for a user in a specific course.
+    Initializes progress tracking and generates necessary analytics events.
+    
+    @param input - Enrollment details including user and course IDs
+    @throws ValidationError if enrollment parameters are invalid
+    @throws DuplicateError if user is already enrolled
+    """
+    createEnrollment(input: CreateEnrollmentInput!): EnrollmentPayload!
+
+    """
+    Updates progress for an existing enrollment.
+    Tracks completion status and triggers relevant achievement checks.
+    
+    @param input - Progress update details
+    @throws NotFoundError if enrollment doesn't exist
+    @throws ValidationError if progress data is invalid
+    """
+    updateEnrollmentProgress(input: UpdateProgressInput!): EnrollmentPayload!
+
+    """
+    Submits an assessment for grading.
+    Handles both automated and manual grading workflows.
+    
+    @param input - Assessment submission details including answers
+    @throws ValidationError if submission is incomplete or invalid
+    @throws TimeoutError if submission window has expired
+    """
+    submitAssessment(input: SubmitAssessmentInput!): AssessmentPayload!
+
+    # Course Management
+    """
+    Archives a course, making it unavailable for new enrollments while preserving existing data.
+    Enrolled students can still access content but new enrollments are blocked.
+    
+    @param id - Unique identifier of the course to archive
+    @throws NotFoundError if course doesn't exist
+    @throws StateError if course is already archived
+    @throws AuthorizationError if user lacks archive permission
+    """
+    archiveCourse(id: ID!): CoursePayload!
+
+    """
+    Publishes a course, making it available for student enrollment.
+    Performs validation checks on course content and structure before publishing.
+    
+    @param id - Unique identifier of the course to publish
+    @throws ValidationError if course content is incomplete or invalid
+    @throws StateError if course is already published
+    @throws AuthorizationError if user lacks publish permission
+    """
+    publishCourse(id: ID!): CoursePayload!
+
+    """
+    Schedules a course for a specific time period with enrollment windows.
+    Useful for cohort-based courses with specific start and end dates.
+    
+    @param input - Scheduling details including dates and enrollment deadlines
+    @throws ValidationError if dates are invalid or in the past
+    @throws ConflictError if schedule conflicts with existing cohorts
+    """
+    scheduleCourse(input: ScheduleCourseInput!): CoursePayload!
+
+    """
+    Creates a complete copy of an existing course with a new title.
+    Duplicates all modules, lessons, assessments, and content while generating new IDs.
+    
+    @param id - ID of the course to duplicate
+    @param newTitle - Title for the duplicated course
+    @throws NotFoundError if source course doesn't exist
+    @throws AuthorizationError if user lacks duplication permission
+    """
+    duplicateCourse(id: ID!, newTitle: String!): CoursePayload!
+
+    # Module Management
+    """
+    Updates an existing module with new content or settings.
+    Maintains module order and relationships within the course.
+    
+    @param input - Updated module information and settings
+    @throws NotFoundError if module doesn't exist
+    @throws ValidationError if updates are invalid
+    @throws AuthorizationError if user lacks module update permission
+    """
+    updateModule(input: UpdateModuleInput!): ModulePayload!
+
+    """
+    Reorders modules within a course to change their sequence.
+    Updates all affected modules to maintain consistent ordering.
+    
+    @param courseId - ID of the course containing the modules
+    @param moduleOrder - New ordered array of module IDs
+    @throws ValidationError if order is invalid or modules are missing
+    @throws AuthorizationError if user lacks reorder permission
+    """
+    reorderModules(courseId: ID!, moduleOrder: [ID!]!): CoursePayload!
+
+    """
+    Archives a module, making it inaccessible while preserving its data.
+    Affects course structure and enrollment access to module content.
+    
+    @param id - Unique identifier of the module to archive
+    @throws NotFoundError if module doesn't exist
+    @throws StateError if module is already archived
+    @throws AuthorizationError if user lacks archive permission
+    """
+    archiveModule(id: ID!): ModulePayload!
+
+    """
+    Creates a duplicate of an existing module in the same or different course.
+    Copies all content, assessments, and settings while generating new IDs.
+    
+    @param id - ID of the module to duplicate
+    @param courseId - ID of the course to place the duplicated module
+    @throws NotFoundError if source module or target course doesn't exist
+    @throws AuthorizationError if user lacks duplication permission
+    """
+    duplicateModule(id: ID!, courseId: ID!): ModulePayload!
+
+    # Lesson Management
+    """
+    Creates a new lesson within a specified module.
+    Automatically handles lesson ordering and content initialization.
+    
+    @param input - Lesson creation details including module association and content
+    @throws ValidationError if lesson details are invalid
+    @throws NotFoundError if module doesn't exist
+    @throws AuthorizationError if user lacks lesson creation permission
+    """
+    createLesson(input: CreateLessonInput!): LessonPayload!
+
+    """
+    Updates an existing lesson with new content or settings.
+    Maintains lesson order and relationships within the module.
+    
+    @param input - Updated lesson information and content
+    @throws NotFoundError if lesson doesn't exist
+    @throws ValidationError if updates are invalid
+    @throws AuthorizationError if user lacks lesson update permission
+    """
+    updateLesson(input: UpdateLessonInput!): LessonPayload!
+
+    """
+    Reorders lessons within a module to change their sequence.
+    Updates all affected lessons to maintain consistent ordering.
+    
+    @param moduleId - ID of the module containing the lessons
+    @param lessonOrder - New ordered array of lesson IDs
+    @throws ValidationError if order is invalid or lessons are missing
+    @throws AuthorizationError if user lacks reorder permission
+    """
+    reorderLessons(moduleId: ID!, lessonOrder: [ID!]!): ModulePayload!
+
+    """
+    Archives a lesson, making it inaccessible while preserving its data.
+    Affects module structure and enrollment access to lesson content.
+    
+    @param id - Unique identifier of the lesson to archive
+    @throws NotFoundError if lesson doesn't exist
+    @throws StateError if lesson is already archived
+    @throws AuthorizationError if user lacks archive permission
+    """
+    archiveLesson(id: ID!): LessonPayload!
+
+    # Assessment Management
+    """
+    Creates a new assessment with specified questions and settings.
+    Supports multiple question types and grading configurations.
+    
+    @param input - Assessment creation details including questions and rubric
+    @throws ValidationError if assessment configuration is invalid
+    @throws AuthorizationError if user lacks assessment creation permission
+    """
+    createAssessment(input: CreateAssessmentInput!): AssessmentPayload!
+
+    """
+    Updates an existing assessment's configuration or content.
+    Preserves existing submissions and grades while updating settings.
+    
+    @param input - Updated assessment configuration
+    @throws NotFoundError if assessment doesn't exist
+    @throws ValidationError if updates are invalid
+    @throws AuthorizationError if user lacks assessment update permission
+    """
+    updateAssessment(input: UpdateAssessmentInput!): AssessmentPayload!
+
+    """
+    Records grades for a submitted assessment.
+    Supports both automated and manual grading processes.
+    
+    @param input - Grading details including scores and feedback
+    @throws NotFoundError if assessment or submission doesn't exist
+    @throws ValidationError if grading data is invalid
+    @throws AuthorizationError if user lacks grading permission
+    """
+    gradeAssessment(input: GradeAssessmentInput!): AssessmentResultPayload!
+
+    """
+    Allows an additional attempt at a previously submitted assessment.
+    Configures new attempt settings while preserving previous submissions.
+    
+    @param enrollmentId - ID of the enrollment requesting retake
+    @param assessmentId - ID of the assessment to retake
+    @throws NotFoundError if enrollment or assessment doesn't exist
+    @throws ValidationError if maximum attempts exceeded
+    @throws AuthorizationError if user lacks retake permission
+    """
+    reopenAssessment(enrollmentId: ID!, assessmentId: ID!): AssessmentPayload!
+
+    # Content Management
+    """
+    Uploads new content to the platform with support for various content types.
+    Handles file processing, validation, and metadata extraction.
+    
+    @param input - Content upload details including file, metadata, and settings
+    @throws ValidationError if content format is unsupported
+    @throws StorageError if upload fails
+    @throws ProcessingError if content processing fails
+    """
+    uploadContent(input: UploadContentInput!): ContentPayload!
+
+    """
+    Updates existing content with new data or metadata.
+    Preserves version history and handles content reprocessing if needed.
+    
+    @param input - Updated content information and settings
+    @throws NotFoundError if content doesn't exist
+    @throws ValidationError if updates are invalid
+    @throws AuthorizationError if user lacks content update permission
+    """
+    updateContent(input: UpdateContentInput!): ContentPayload!
+
+    """
+    Validates content against platform standards and accessibility requirements.
+    Performs comprehensive checks including format, size, and compliance.
+    
+    @param id - ID of the content to validate
+    @throws NotFoundError if content doesn't exist
+    @throws ValidationError if content fails validation checks
+    @returns Detailed validation results with warnings and errors
+    """
+    validateContent(id: ID!): ContentValidationPayload!
+
+    """
+    Archives content while maintaining references and historical data.
+    Affects visibility in courses and modules using this content.
+    
+    @param id - ID of the content to archive
+    @throws NotFoundError if content doesn't exist
+    @throws StateError if content is already archived
+    @throws AuthorizationError if user lacks archive permission
+    """
+    archiveContent(id: ID!): ContentPayload!
+
+    # Enrollment Management
+    """
+    Temporarily suspends an active enrollment while preserving progress.
+    Useful for handling payment issues or temporary access restrictions.
+    
+    @param id - ID of the enrollment to pause
+    @throws NotFoundError if enrollment doesn't exist
+    @throws StateError if enrollment is not in an active state
+    @throws AuthorizationError if user lacks pause permission
+    """
+    pauseEnrollment(id: ID!): EnrollmentPayload!
+
+    """
+    Reactivates a previously paused enrollment.
+    Restores access and continues progress tracking.
+    
+    @param id - ID of the enrollment to resume
+    @throws NotFoundError if enrollment doesn't exist
+    @throws StateError if enrollment is not in a paused state
+    @throws AuthorizationError if user lacks resume permission
+    """
+    resumeEnrollment(id: ID!): EnrollmentPayload!
+
+    """
+    Transfers an enrollment from one user to another.
+    Preserves all progress, assessment results, and historical data.
+    
+    @param input - Transfer details including source and target users
+    @throws NotFoundError if enrollment doesn't exist
+    @throws ValidationError if transfer parameters are invalid
+    @throws AuthorizationError if user lacks transfer permission
+    @throws StateError if enrollment is not transferable
+    """
+    transferEnrollment(input: TransferEnrollmentInput!): EnrollmentPayload!
+
+    """
+    Extends the duration of an existing enrollment.
+    Updates access period and recalculates completion deadlines.
+    
+    @param id - ID of the enrollment to extend
+    @param extensionDays - Number of days to extend the enrollment
+    @throws NotFoundError if enrollment doesn't exist
+    @throws ValidationError if extension period is invalid
+    @throws AuthorizationError if user lacks extension permission
+    @throws StateError if enrollment is not extendable (e.g., completed or archived)
+    """
+    extendEnrollment(id: ID!, extensionDays: Int!): EnrollmentPayload!
+
+    # Progress Management
+    """
+    Marks a lesson as complete for a specific enrollment.
+    Updates progress tracking and triggers achievement checks.
+    
+    @param enrollmentId - ID of the enrollment
+    @param lessonId - ID of the lesson to mark as complete
+    @throws NotFoundError if enrollment or lesson doesn't exist
+    @throws ValidationError if lesson completion requirements not met
+    @throws AuthorizationError if user lacks permission
+    """
+    markLessonComplete(enrollmentId: ID!, lessonId: ID!): ProgressPayload!
+
+    """
+    Resets progress for a specific module within an enrollment.
+    Clears completion status and resets all associated assessments.
+    
+    @param enrollmentId - ID of the enrollment
+    @param moduleId - ID of the module to reset
+    @throws NotFoundError if enrollment or module doesn't exist
+    @throws StateError if module is locked or unavailable
+    @throws AuthorizationError if user lacks reset permission
+    """
+    resetProgress(enrollmentId: ID!, moduleId: ID!): ProgressPayload!
+
+    """
+    Updates the learning path for a specific user.
+    Modifies course sequence and completion deadlines.
+    
+    @param input - Learning path update details
+    @throws ValidationError if path configuration is invalid
+    @throws NotFoundError if user or courses don't exist
+    @throws AuthorizationError if user lacks path modification permission
+    """
+    updateLearningPath(input: UpdateLearningPathInput!): LearningPathPayload!
+
+    """
+    Tracks detailed progress for content consumption.
+    Records time spent, completion percentage, and interaction data.
+    
+    @param input - Content progress tracking details
+    @throws ValidationError if progress data is invalid
+    @throws NotFoundError if content or enrollment doesn't exist
+    @throws StateError if content tracking is disabled
+    """
+    trackContentProgress(input: ContentProgressInput!): ProgressPayload!
+
+    # Certificate Management
+    """
+    Issues a certificate for a completed course enrollment.
+    Generates digital certificate with unique validation hash.
+    
+    @param enrollmentId - ID of the completed enrollment
+    @throws ValidationError if completion requirements not met
+    @throws StateError if certificate already issued
+    @throws AuthorizationError if user lacks certificate issuance permission
+    """
+    issueCertificate(enrollmentId: ID!): CertificatePayload!
+
+    """
+    Revokes a previously issued certificate.
+    Marks certificate as invalid while maintaining audit trail.
+    
+    @param certificateId - ID of the certificate to revoke
+    @param reason - Reason for certificate revocation
+    @throws NotFoundError if certificate doesn't exist
+    @throws StateError if certificate already revoked
+    @throws AuthorizationError if user lacks revocation permission
+    """
+    revokeCertificate(certificateId: ID!, reason: String!): CertificatePayload!
+
+    """
+    Validates a certificate's authenticity and current status.
+    Verifies digital signatures and checks against revocation list.
+    
+    @param certificateId - ID of the certificate to validate
+    @throws NotFoundError if certificate doesn't exist
+    @returns Detailed validation status and certificate information
+    """
+    validateCertificate(certificateId: ID!): CertificateValidationPayload!
+}
+
+# Subscription Type
+
+type Subscription {
+    """
+    Real-time updates for enrollment progress changes.
+    Emits events when progress is updated, including completion status changes.
+    
+    @param enrollmentId - ID of the enrollment to monitor
+    @returns EnrollmentProgress containing previous and current progress states
+    @throws NotFoundError if enrollment doesn't exist
+    @throws AuthorizationError if user lacks subscription permission
+    """
+    enrollmentProgressUpdated(enrollmentId: ID!): EnrollmentProgress!
+
+    """
+    Real-time updates for course modifications.
+    Emits events for content updates, status changes, and enrollment changes.
+    
+    @param courseId - ID of the course to monitor
+    @returns CourseUpdate containing update type and modified fields
+    @throws NotFoundError if course doesn't exist
+    @throws AuthorizationError if user lacks subscription permission
+    """
+    courseUpdated(courseId: ID!): CourseUpdate!
+
+    """
+    Real-time updates for detailed progress tracking.
+    Emits events for lesson completions, time spent, and achievement unlocks.
+    
+    @param enrollmentId - ID of the enrollment to monitor
+    @returns Progress containing detailed progress metrics and status
+    @throws NotFoundError if enrollment doesn't exist
+    @throws AuthorizationError if user lacks subscription permission
+    """
+    progressUpdated(enrollmentId: ID!): Progress!
+
+    """
+    Real-time notifications for assessment submissions.
+    Emits events when assessments are submitted for grading.
+    
+    @param courseId - ID of the course to monitor for submissions
+    @returns AssessmentResult containing submission details and initial grading
+    @throws NotFoundError if course doesn't exist
+    @throws AuthorizationError if user lacks subscription permission
+    """
+    assessmentSubmitted(courseId: ID!): AssessmentResult!
+
+    """
+    Real-time updates for certificate status changes.
+    Emits events for issuance, revocation, and expiration of certificates.
+    
+    @param certificateId - ID of the certificate to monitor
+    @returns Certificate containing updated certificate status and details
+    @throws NotFoundError if certificate doesn't exist
+    @throws AuthorizationError if user lacks subscription permission
+    """
+    certificateStatusUpdated(certificateId: ID!): Certificate!
 }

@@ -1,0 +1,75 @@
+introspection:
+  schemaFile: ./libs/be-core/src/lib/graphql/schema.graphql
+  queryNameStrategy: capitalizeFirst
+  fieldExpansionDepth: 2
+
+servers:
+  - url: http://localhost:3001/graphql
+    description: Local Development Server
+    production: false
+
+info:
+  title: API Documentation
+  description: |
+    GraphQL API documentation for NX Tech Stack POC application.
+    
+    ## Features
+    - Full GraphQL Schema documentation
+    - Interactive examples
+    - Authentication details
+    - Error handling
+  version: 1.0.0
+  contact:
+    name: Development Team
+    email: dev@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+spectaql:
+  logoFile: ./DS9.png
+  faviconFile: ./DS9.png
+
+  # Display options
+  interactiveDocExplorer: true
+  queryGeneratorTab: true
+  defaultShowExamples: true
+  defaultShowDeprecated: true
+  fullPageWidth: true
+  autoExpand: true
+  scrollToItem: true
+
+  # Navigation
+  navigationDepth: 4
+  navItemsExpandable: true
+  navItemsIndented: true
+  sidebarCollapsible: false
+
+  # Theme
+  themeDir: default
+
+  showExamples: true
+  examplesInDocExplorer: true
+  metadataEnabled: true
+
+  headers:
+    - name: Authorization
+      example: Bearer <token>
+      comment: JWT Authentication token
+
+  spectaqlDirective:
+    enable: true
+
+  metadata:
+    title: true
+    descriptions: true
+    types: true
+    interfaces: true
+    unions: true
+    enums: true
+    inputs: true
+    deprecation: true
+    directives: true
+    examples: true
+    authentication: true
+    errors: true
