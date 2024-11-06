@@ -45,31 +45,47 @@ type LoginResponse {
 }
 
 input LoginInput {
-  email: String!
+  email: EmailAddress!
   password: String!
 }
 
 # Scalar Types
 
 """
-Custom scalar for handling dates and times in ISO 8601 format.
+A custom scalar representing a date and time in ISO 8601 format, including timezone information.
+Used for all date and time fields to ensure consistent formatting and parsing throughout the platform.
 """
 scalar DateTime
 
 """
-Custom scalar for handling JSON data structures.
+A custom scalar representing a JSON object.
+Allows for storing and transferring complex data structures in a flexible, unstructured format.
 """
 scalar JSONObject
 
 """
-Custom scalar for handling uploaded files.
+A custom scalar for handling file uploads via mutations.
+Enables clients to upload files, such as course materials or user submissions, as part of GraphQL operations.
 """
 scalar Upload
 
 """
-Custom scalar for handling rich text content.
+A custom scalar for rich text content supporting HTML and Markdown syntax.
+Facilitates the inclusion of formatted text with styling, links, images, and embedded media within content descriptions and other textual fields.
 """
 scalar RichText
+
+"""
+A custom scalar representing a valid, properly formatted URL.
+Used for all external links, resource locations, and references to media files.
+"""
+scalar URL
+
+"""
+A custom scalar representing a valid email address with proper formatting and validation.
+Used for user emails and any email-related data to ensure accurate communication channels.
+"""
+scalar EmailAddress
 
 # Enums
 
@@ -145,6 +161,7 @@ enum AssessmentType {
 
 """
 Tracks completion status for assessments.
+Assessment status indicates the current state of an assessment, from initial assignment to final grading.
 """
 enum AssessmentStatus {
     PENDING
@@ -157,6 +174,7 @@ enum AssessmentStatus {
 
 """
 Defines types of certificates available.
+Certificate types categorize the different kinds of certificates that can be awarded to learners, based on their achievements.
 """
 enum CertificateType {
     COMPLETION
@@ -167,6 +185,7 @@ enum CertificateType {
 
 """
 Enum for certificate types.
+Certification types specify the nature of the certification awarded, reflecting the learner's accomplishments and the context of the award.
 """
 enum CertificationType {
     COMPLETION
@@ -178,6 +197,7 @@ enum CertificationType {
 
 """
 Enum for certificate status.
+Certificate status indicates the current validity and state of a certificate, from issuance to potential revocation.
 """
 enum CertificateStatus {
     VALID
@@ -188,6 +208,7 @@ enum CertificateStatus {
 
 """
 Enum for user roles.
+User roles define the permissions and access levels of users within the system, determining their capabilities and responsibilities.
 """
 enum UserRole {
     STUDENT
@@ -199,6 +220,7 @@ enum UserRole {
 
 """
 Enum for trend directions.
+Trend directions indicate the movement or change in a particular metric over time, helping to identify patterns and inform decisions.
 """
 enum TrendDirection {
     INCREASING
@@ -208,6 +230,7 @@ enum TrendDirection {
 
 """
 Enum for warning severity levels.
+Warning severity levels classify the seriousness of warnings generated during validation or processing, guiding appropriate responses.
 """
 enum WarningSeverity {
     INFO
@@ -218,6 +241,7 @@ enum WarningSeverity {
 
 """
 Enum for question types.
+Question types categorize the different formats of questions used in assessments, each requiring specific responses from learners.
 """
 enum QuestionType {
     MULTIPLE_CHOICE
@@ -230,6 +254,7 @@ enum QuestionType {
 
 """
 Enum for achievement types.
+Achievement types classify the various accomplishments learners can earn, recognizing their progress and success in different areas.
 """
 enum AchievementType {
     COURSE_COMPLETION
@@ -241,6 +266,7 @@ enum AchievementType {
 
 """
 Enum for course update types.
+Course update types describe the nature of changes made to a course, reflecting modifications in content, status, or structure.
 """
 enum CourseUpdateType {
     CONTENT_UPDATED
@@ -253,6 +279,7 @@ enum CourseUpdateType {
 
 """
 Enum for duration units.
+Duration units specify the measurement units for time-related fields, ensuring consistency in representing durations across the platform.
 """
 enum DurationUnit {
     MINUTES
@@ -265,6 +292,7 @@ enum DurationUnit {
 
 """
 Base interface for all node types in the system.
+Nodes are fundamental entities within the system, each with a unique identifier and timestamps for creation and updates.
 """
 interface Node {
     id: ID!
@@ -274,6 +302,7 @@ interface Node {
 
 """
 Interface for entities requiring audit tracking.
+Auditable entities maintain a history of changes, including who made the changes and when, supporting accountability and transparency.
 """
 interface Auditable {
     createdBy: String!
@@ -284,6 +313,7 @@ interface Auditable {
 
 """
 Interface for searchable content.
+Searchable entities can be indexed and retrieved based on their title, description, and associated tags, enhancing discoverability.
 """
 interface Searchable {
     title: String!
@@ -294,6 +324,7 @@ interface Searchable {
 
 """
 Interface for content requiring access control.
+Access-controlled entities have defined access levels and groups, ensuring that only authorized users can view or modify them.
 """
 interface AccessControlled {
     accessLevel: AccessLevel!
@@ -303,6 +334,7 @@ interface AccessControlled {
 
 """
 Interface for trackable learning progress.
+Trackable entities monitor the progress of learners, including start and completion times, to support personalized learning experiences.
 """
 interface Trackable {
     progress: Float!
@@ -313,6 +345,7 @@ interface Trackable {
 
 """
 Base interface for all error types to ensure consistency.
+Error interfaces standardize the structure of error messages, providing codes, messages, and additional details for troubleshooting.
 """
 interface Error {
     code: String!
@@ -323,6 +356,7 @@ interface Error {
 
 """
 Base interface for all metadata types to ensure consistency.
+Metadata interfaces provide a common structure for additional information associated with entities, supporting extensibility and integration.
 """
 interface Metadata {
     customFields: JSONObject
@@ -347,7 +381,9 @@ input BaseContentInput {
 # Core Types
 
 """
-Represents a complete course in the learning platform.
+Represents a complete course offered on the learning platform.
+A course is a structured set of educational materials designed to teach specific skills or knowledge. 
+It includes modules, lessons, assessments, and other resources necessary for learners to achieve their learning objectives.
 """
 type Course implements Node & Auditable & Searchable & AccessControlled {
     id: ID!
@@ -382,7 +418,9 @@ type Course implements Node & Auditable & Searchable & AccessControlled {
 }
 
 """
-Represents a module within a course.
+Represents a module within a course, grouping related lessons together.
+Modules are subdivisions of a course that focus on specific topics or skills. 
+They help organize the course content into manageable sections, each containing lessons and assessments.
 """
 type Module implements Node & Auditable & Searchable {
     id: ID!
@@ -406,7 +444,9 @@ type Module implements Node & Auditable & Searchable {
 }
 
 """
-Represents a lesson within a module.
+Represents an individual lesson within a module.
+Lessons are the building blocks of a module, containing educational content such as videos, texts, or interactive activities. 
+They are designed to convey specific information or skills to the learner.
 """
 type Lesson implements Node & Auditable & Searchable & AccessControlled {
     id: ID!
@@ -434,7 +474,8 @@ type Lesson implements Node & Auditable & Searchable & AccessControlled {
 }
 
 """
-Represents content within a lesson.
+Represents the actual educational material within a lesson.
+Content can be of various types, such as video, text, or interactive media, and is the primary medium through which learners engage with the lesson material.
 """
 type Content {
     id: ID!
@@ -455,6 +496,8 @@ type Content {
 
 """
 Represents an assessment in the system.
+An assessment is a tool used to evaluate the knowledge, skills, and abilities of learners. 
+It can include various question types and is used to determine the learner's understanding of the course material.
 """
 type Assessment implements Node & Auditable {
     id: ID!
@@ -479,6 +522,7 @@ type Assessment implements Node & Auditable {
 
 """
 Represents a user's enrollment in a course.
+Enrollment tracks a user's participation in a course, including their progress, completion status, and any assessments they have taken.
 """
 type Enrollment implements Node & Trackable {
     id: ID!
@@ -500,10 +544,12 @@ type Enrollment implements Node & Trackable {
 
 """
 Represents a user in the system.
+Users are individuals who interact with the platform, either as learners, instructors, or administrators. 
+They have roles that define their permissions and access levels within the system.
 """
 type User implements Node & Auditable {
     id: ID!
-    email: String!
+    email: EmailAddress!
     firstName: String!
     lastName: String!
     role: UserRole!
@@ -521,6 +567,7 @@ type User implements Node & Auditable {
 
 """
 Represents analytics data for a course.
+Course analytics provide insights into the performance and engagement of a course, including metrics like enrollment numbers, completion rates, and revenue.
 """
 type CourseAnalytics {
     totalEnrollments: Int!
@@ -537,6 +584,7 @@ type CourseAnalytics {
 
 """
 Represents assessment statistics.
+Assessment statistics offer detailed insights into the performance of assessments, including average scores, pass rates, and submission rates.
 """
 type AssessmentStats {
     averageScore: Float!
@@ -547,6 +595,7 @@ type AssessmentStats {
 
 """
 Represents engagement metrics for a course.
+Engagement metrics track how learners interact with the course content, including session durations, participation rates, and content completion rates.
 """
 type EngagementMetrics {
     averageSessionDuration: Int!
@@ -557,6 +606,7 @@ type EngagementMetrics {
 
 """
 Represents completion rate data.
+Completion rate data provides information on how many learners have completed specific content within a course, along with the average time spent.
 """
 type CompletionRate {
     contentId: ID!
@@ -566,6 +616,7 @@ type CompletionRate {
 
 """
 Represents trend data over time.
+Trend data tracks changes in key metrics over time, helping to identify patterns and inform decision-making for course improvements.
 """
 type TrendsData {
     enrollmentTrend: [TimeSeriesData!]!
@@ -584,6 +635,7 @@ type TimeSeriesData {
 
 """
 Represents aggregated course data.
+Course aggregations provide summary statistics on courses, such as counts by difficulty level, status, and enrollment ranges.
 """
 type CourseAggregations {
     byDifficulty: [DifficultyCount!]!
@@ -597,7 +649,7 @@ type CourseAggregations {
 
 """
 Represents an audit entry for tracking changes.
-Implements comprehensive audit trail functionality.
+Audit entries log changes made to entities within the system, providing a comprehensive audit trail for accountability and transparency.
 """
 type AuditEntry implements Node {
     id: ID!
@@ -617,7 +669,7 @@ type AuditEntry implements Node {
 
 """
 Represents a single change within an audit entry.
-Used to track specific field changes in audited entities.
+Audit changes detail specific modifications made to fields within an entity, helping to track the history of changes over time.
 """
 type AuditChange {
     field: String!
@@ -629,6 +681,7 @@ type AuditChange {
 
 """
 Represents standard Relay pagination information.
+Pagination information helps manage large datasets by providing details on the current page, available pages, and navigation options.
 """
 type PageInfo {
     hasNextPage: Boolean!
@@ -639,6 +692,7 @@ type PageInfo {
 
 """
 Represents a connection type for enrollments.
+Enrollment connections facilitate the retrieval of paginated enrollment data, including edges and pagination information.
 """
 type EnrollmentConnection {
     edges: [EnrollmentEdge!]!
@@ -648,6 +702,7 @@ type EnrollmentConnection {
 
 """
 Represents an enrollment edge.
+Enrollment edges link individual enrollment nodes within a connection, providing a cursor for pagination.
 """
 type EnrollmentEdge {
     node: Enrollment!
@@ -656,6 +711,7 @@ type EnrollmentEdge {
 
 """
 Represents an instructor.
+Instructors are users who create and manage courses, providing educational content and guidance to learners.
 """
 type Instructor implements Node {
     id: ID!
@@ -671,6 +727,7 @@ type Instructor implements Node {
 
 """
 Represents a skill that can be learned.
+Skills are specific abilities or knowledge areas that learners can acquire through courses and assessments.
 """
 type Skill {
     id: ID!
@@ -683,6 +740,7 @@ type Skill {
 
 """
 Represents a course review.
+Course reviews provide feedback from learners on their experiences with a course, including ratings and comments.
 """
 type Review implements Node {
     id: ID!
@@ -698,6 +756,7 @@ type Review implements Node {
 
 """
 Represents a question in an assessment.
+Questions are the fundamental components of assessments, designed to evaluate a learner's understanding of the course material.
 """
 type Question {
     id: ID!
@@ -711,6 +770,7 @@ type Question {
 
 """
 Represents an option for a question.
+Question options are possible answers for multiple-choice or single-choice questions, indicating whether they are correct or not.
 """
 type QuestionOption {
     id: ID!
@@ -720,6 +780,7 @@ type QuestionOption {
 
 """
 Represents a rubric for assessment.
+Rubrics provide criteria for grading assessments, outlining expectations and scoring guidelines for each criterion.
 """
 type Rubric {
     id: ID!
@@ -730,6 +791,7 @@ type Rubric {
 
 """
 Represents a criterion in a rubric.
+Rubric criteria define specific aspects of an assessment that are evaluated, each with its own scoring levels and descriptions.
 """
 type RubricCriterion {
     id: ID!
@@ -741,6 +803,7 @@ type RubricCriterion {
 
 """
 Represents a level in a rubric criterion.
+Rubric levels describe the performance standards for each criterion, with associated points and descriptions.
 """
 type RubricLevel {
     points: Float!
@@ -749,6 +812,7 @@ type RubricLevel {
 
 """
 Represents a rubric score.
+Rubric scores record the evaluation of a learner's performance against the rubric criteria, including feedback and points awarded.
 """
 type RubricScore {
     criterionId: ID!
@@ -758,6 +822,7 @@ type RubricScore {
 
 """
 Represents user preferences.
+User preferences store individual settings for language, notifications, and other customizable options within the platform.
 """
 type UserPreferences {
     language: String!
@@ -769,6 +834,7 @@ type UserPreferences {
 
 """
 Represents a user achievement.
+Achievements recognize significant accomplishments by learners, such as course completions or skill mastery.
 """
 type Achievement implements Node {
     id: ID!
@@ -783,6 +849,7 @@ type Achievement implements Node {
 
 """
 Represents a user's skill level.
+User skills track the proficiency levels of learners in specific skills, including endorsements and verification status.
 """
 type UserSkill {
     skill: Skill!
@@ -793,6 +860,7 @@ type UserSkill {
 
 """
 Represents accessibility information.
+Accessibility information ensures that content is accessible to all learners, including those with disabilities, by providing features like closed captions and transcripts.
 """
 type AccessibilityInfo {
     hasClosedCaptions: Boolean!
@@ -805,6 +873,7 @@ type AccessibilityInfo {
 
 """
 Represents a learning path.
+Learning paths guide learners through a sequence of courses, helping them achieve specific educational goals or career objectives.
 """
 type LearningPath implements Node {
     id: ID!
@@ -820,6 +889,7 @@ type LearningPath implements Node {
 
 """
 Represents configuration for document generation.
+Generation configurations define the settings and templates used for creating documents, such as certificates or reports.
 """
 type GenerationConfig {
     id: ID!
@@ -832,6 +902,7 @@ type GenerationConfig {
 
 """
 Represents validation configuration.
+Validation configurations specify the rules and criteria for ensuring data quality and compliance within the platform.
 """
 type ValidationConfig {
     rules: [ValidationRule!]!
@@ -841,6 +912,7 @@ type ValidationConfig {
 
 """
 Represents a validation rule.
+Validation rules define specific conditions that data must meet to be considered valid, including severity levels and custom messages.
 """
 type ValidationRule {
     name: String!
@@ -854,6 +926,7 @@ type ValidationRule {
 
 """
 Metadata for courses.
+Course metadata provides additional information about a course, such as language, duration, and target audience, to enhance discoverability and relevance.
 """
 type CourseMetadata {
     language: String!
@@ -867,6 +940,7 @@ type CourseMetadata {
 
 """
 Metadata for modules.
+Module metadata includes details like estimated duration and learning objectives, helping to organize and present module content effectively.
 """
 type ModuleMetadata {
     estimatedDuration: Int!
@@ -877,6 +951,7 @@ type ModuleMetadata {
 
 """
 Metadata for lessons.
+Lesson metadata describes the interactivity level, resource type, and technical requirements of a lesson, supporting effective content delivery.
 """
 type LessonMetadata {
     interactivityLevel: String!
@@ -888,6 +963,7 @@ type LessonMetadata {
 
 """
 Metadata for certificates.
+Certificate metadata contains information about the certificate's template, issuer, and verification details, ensuring authenticity and traceability.
 """
 type CertificateMetadata {
     templateId: String!
@@ -899,6 +975,7 @@ type CertificateMetadata {
 
 """
 Metadata for progress tracking.
+Progress metadata records detailed information about a learner's progress, including checkpoints and device usage, to support personalized learning experiences.
 """
 type ProgressMetadata {
     lastCheckpoint: String
@@ -909,6 +986,7 @@ type ProgressMetadata {
 
 """
 Metadata for enrollments.
+Enrollment metadata captures details about the enrollment source, payment information, and promotional codes, providing context for enrollment activities.
 """
 type EnrollmentMetadata {
     enrollmentSource: String!
@@ -919,6 +997,7 @@ type EnrollmentMetadata {
 
 """
 Metadata for assessments.
+Assessment metadata includes grading scales, reviewer information, and submission guidelines, supporting fair and consistent evaluation processes.
 """
 type AssessmentMetadata {
     gradeScale: JSONObject
@@ -929,6 +1008,7 @@ type AssessmentMetadata {
 
 """
 Metadata for content.
+Content metadata provides information about the source system, technical details, and custom fields, enhancing content management and integration.
 """
 type ContentMetadata {
     sourceSystem: String
@@ -941,6 +1021,7 @@ type ContentMetadata {
 
 """
 Connection type for paginated course results.
+Course connections facilitate the retrieval of paginated course data, including edges, pagination information, and aggregations.
 """
 type CourseConnection {
     edges: [CourseEdge!]!
@@ -951,6 +1032,7 @@ type CourseConnection {
 
 """
 Connection type for paginated module results.
+Module connections enable the retrieval of paginated module data, supporting efficient navigation and exploration of course structures.
 """
 type ModuleConnection {
     edges: [ModuleEdge!]!
@@ -960,6 +1042,7 @@ type ModuleConnection {
 
 """
 Connection type for paginated lesson results.
+Lesson connections provide access to paginated lesson data, helping learners and instructors manage and explore lesson content.
 """
 type LessonConnection {
     edges: [LessonEdge!]!
@@ -971,6 +1054,7 @@ type LessonConnection {
 
 """
 Edge type for course connections.
+Course edges link individual course nodes within a connection, providing a cursor for pagination and navigation.
 """
 type CourseEdge {
     node: Course!
@@ -979,6 +1063,7 @@ type CourseEdge {
 
 """
 Edge type for module connections.
+Module edges connect individual module nodes within a connection, supporting pagination and efficient data retrieval.
 """
 type ModuleEdge {
     node: Module!
@@ -987,6 +1072,7 @@ type ModuleEdge {
 
 """
 Edge type for lesson connections.
+Lesson edges link individual lesson nodes within a connection, facilitating pagination and content exploration.
 """
 type LessonEdge {
     node: Lesson!
@@ -997,6 +1083,7 @@ type LessonEdge {
 
 """
 Base fields for all metadata types.
+Metadata inputs provide a flexible structure for additional data associated with entities, supporting customization and integration.
 """
 input BaseMetadataInput {
     customFields: JSONObject
@@ -1005,6 +1092,7 @@ input BaseMetadataInput {
 
 """
 Input for creating a new course.
+This input captures all necessary details to initialize a new course, including its title, description, difficulty level, and metadata.
 """
 input CreateCourseInput {
     title: String!
@@ -1019,6 +1107,7 @@ input CreateCourseInput {
 
 """
 Input for updating a course.
+Allows for the modification of existing course details, enabling updates to fields like title, description, and metadata.
 """
 input UpdateCourseInput {
     id: ID!
@@ -1034,6 +1123,7 @@ input UpdateCourseInput {
 
 """
 Input for creating a new module.
+Captures the details required to add a new module to a course, including its title, description, and order within the course.
 """
 input CreateModuleInput {
     courseId: ID!
@@ -1047,6 +1137,7 @@ input CreateModuleInput {
 
 """
 Input for scheduling a course.
+Defines the scheduling parameters for a course, including start and end dates, and enrollment deadlines.
 """
 input ScheduleCourseInput {
     id: ID!
@@ -1058,6 +1149,7 @@ input ScheduleCourseInput {
 
 """
 Input for updating a module.
+Enables updates to an existing module's details, such as its title, description, and learning objectives.
 """
 input UpdateModuleInput {
     id: ID!
@@ -1070,6 +1162,7 @@ input UpdateModuleInput {
 
 """
 Input for creating a new lesson.
+Specifies the details needed to create a lesson within a module, including its content, duration, and order.
 """
 input CreateLessonInput {
     moduleId: ID!
@@ -1085,6 +1178,7 @@ input CreateLessonInput {
 
 """
 Input for uploading new content.
+Facilitates the addition of new content to the platform, supporting various content types and associated metadata.
 """
 input ContentInput {
     type: ContentType!
@@ -1100,6 +1194,7 @@ input ContentInput {
 
 """
 Input for grading an assessment.
+Captures the details required to record grades for an assessment, including scores, feedback, and rubric evaluations.
 """
 input GradeAssessmentInput {
     assessmentId: ID!
@@ -1112,6 +1207,7 @@ input GradeAssessmentInput {
 
 """
 Input for transferring an enrollment.
+Defines the parameters for transferring an enrollment from one user to another, preserving progress and historical data.
 """
 input TransferEnrollmentInput {
     enrollmentId: ID!
@@ -1122,6 +1218,7 @@ input TransferEnrollmentInput {
 
 """
 Input for tracking content progress.
+Records progress details for content consumption, including completion percentage and time spent.
 """
 input ContentProgressInput {
     enrollmentId: ID!
@@ -1133,6 +1230,7 @@ input ContentProgressInput {
 
 """
 Input for updating a learning path.
+Allows for modifications to a user's learning path, including course sequence and completion deadlines.
 """
 input UpdateLearningPathInput {
     id: ID!
@@ -1144,6 +1242,7 @@ input UpdateLearningPathInput {
 
 """
 Input for course metadata.
+Captures additional information about a course, such as language, estimated duration, and target audience.
 """
 input CourseMetadataInput {
     language: String!
@@ -1156,6 +1255,7 @@ input CourseMetadataInput {
 
 """
 Input for module metadata.
+Provides metadata details for a module, including estimated duration and learning objectives.
 """
 input ModuleMetadataInput {
     estimatedDuration: Int!
@@ -1165,16 +1265,18 @@ input ModuleMetadataInput {
 
 """
 Input for lesson metadata.
+Describes metadata for a lesson, including interactivity level and technical requirements.
 """
 input LessonMetadataInput {
     interactivityLevel: String!
     resourceType: String!
-    technicalRequirements: [String!]
+    technicalRequirements: [String!]!
     customFields: JSONObject
 }
 
 """
 Input for content metadata.
+Captures metadata for content, including source system and technical details.
 """
 input ContentMetadataInput {
     sourceSystem: String
@@ -1184,6 +1286,7 @@ input ContentMetadataInput {
 
 """
 Input for creating an enrollment.
+Specifies the details needed to enroll a user in a course, including user and course IDs.
 """
 input CreateEnrollmentInput {
     userId: ID!
@@ -1194,6 +1297,7 @@ input CreateEnrollmentInput {
 
 """
 Input for updating progress.
+Allows for updates to an enrollment's progress, including completed items and time spent.
 """
 input UpdateProgressInput {
     enrollmentId: ID!
@@ -1204,6 +1308,7 @@ input UpdateProgressInput {
 
 """
 Input for submitting an assessment.
+Captures the details of an assessment submission, including answers and time spent.
 """
 input SubmitAssessmentInput {
     enrollmentId: ID!
@@ -1214,6 +1319,7 @@ input SubmitAssessmentInput {
 
 """
 Input for assessment answers.
+Defines the structure for submitting answers to assessment questions.
 """
 input AssessmentAnswer {
     questionId: ID!
@@ -1222,6 +1328,7 @@ input AssessmentAnswer {
 
 """
 Input for updating a lesson.
+Enables updates to an existing lesson's content and metadata.
 """
 input UpdateLessonInput {
     id: ID!
@@ -1234,6 +1341,7 @@ input UpdateLessonInput {
 
 """
 Input for creating an assessment.
+Specifies the details needed to create a new assessment, including questions and grading criteria.
 """
 input CreateAssessmentInput {
     title: String!
@@ -1244,27 +1352,29 @@ input CreateAssessmentInput {
     maxAttempts: Int!
     timeLimit: Int
     dueDate: DateTime
-    weight: Float
-    rubric: RubricInput
+    weight: Float!
+    rubric: RubricInput!
 }
 
 """
 Input for updating an assessment.
+Allows for modifications to an existing assessment's configuration and content.
 """
 input UpdateAssessmentInput {
     id: ID!
     title: String
     description: String
-    passingScore: Float
-    maxAttempts: Int
+    passingScore: Float!
+    maxAttempts: Int!
     timeLimit: Int
     dueDate: DateTime
-    weight: Float
-    rubric: RubricInput
+    weight: Float!
+    rubric: RubricInput!
 }
 
 """
 Input for accessibility settings.
+Defines the accessibility features for content, ensuring it is usable by all learners.
 """
 input AccessibilityInput {
     hasClosedCaptions: Boolean!
@@ -1277,6 +1387,7 @@ input AccessibilityInput {
 
 """
 Input for course searching and filtering.
+Provides criteria for searching and filtering courses, including status, difficulty level, and tags.
 """
 input CourseSearchFilter {
     query: String
@@ -1292,6 +1403,7 @@ input CourseSearchFilter {
 
 """
 Input for pagination.
+Defines parameters for paginating results, including the number of items and cursor positions. The default direction is forward.
 """
 input PaginationInput {
     first: Int
@@ -1302,6 +1414,7 @@ input PaginationInput {
 
 """
 Input for date ranges.
+Specifies a range of dates for filtering data, including start and end dates.
 """
 input DateRangeInput {
     startDate: DateTime!
@@ -1310,6 +1423,7 @@ input DateRangeInput {
 
 """
 Input for rubric scores.
+Captures the scores for rubric criteria, including feedback and points awarded.
 """
 input RubricScoreInput {
     criterionId: ID!
@@ -1319,6 +1433,7 @@ input RubricScoreInput {
 
 """
 Input type for creating or updating questions.
+Defines the structure for adding or modifying questions in an assessment.
 """
 input QuestionInput {
     type: QuestionType!
@@ -1331,6 +1446,7 @@ input QuestionInput {
 
 """
 Input type for question options.
+Specifies the details of options for multiple-choice or single-choice questions.
 """
 input QuestionOptionInput {
     content: String!
@@ -1339,6 +1455,7 @@ input QuestionOptionInput {
 
 """
 Input type for creating or updating rubrics.
+Defines the structure for adding or modifying rubrics, including criteria and scoring levels. The default unit is points.
 """
 input RubricInput {
     criteria: [RubricCriterionInput!]!
@@ -1348,6 +1465,7 @@ input RubricInput {
 
 """
 Input type for rubric criteria.
+Specifies the details of criteria within a rubric, including name, description, and scoring levels. The default unit is points.
 """
 input RubricCriterionInput {
     name: String!
@@ -1358,6 +1476,7 @@ input RubricCriterionInput {
 
 """
 Input type for rubric levels.
+Defines the scoring levels for a rubric criterion, including points and descriptions. The default unit is points.
 """
 input RubricLevelInput {
     points: Float!
@@ -1366,6 +1485,7 @@ input RubricLevelInput {
 
 """
 Input type for price range filtering.
+Specifies the range of prices for filtering courses, including minimum and maximum values. The default currency is USD.
 """
 input PriceRangeInput {
     min: Float
@@ -1375,6 +1495,7 @@ input PriceRangeInput {
 
 """
 Input type for duration range filtering.
+Defines the range of durations for filtering courses, including minimum and maximum values and units. The default unit is minutes.
 """
 input DurationRangeInput {
     min: Int
@@ -1385,7 +1506,7 @@ input DurationRangeInput {
 # Types for Subscriptions
 
 """
-Represents real-time enrollment progress updates.
+Represents real-time enrollment progress updates. Enrollment progress updates are used to notify about changes to a user's progress in a course, including the previous and current progress, the time of update, and the user responsible for the update.
 """
 type EnrollmentProgress {
     enrollment: Enrollment!
@@ -1398,7 +1519,7 @@ type EnrollmentProgress {
 
 
 """
-Input for uploading new content with comprehensive fields.
+Input for uploading new content with comprehensive fields. Content uploads are used to add new content to the system, including title, description, type, file, URL, data, duration, thumbnail, interactivity type, format, language, and accessibility.
 """
 input UploadContentInput {
     title: String!
@@ -1418,7 +1539,7 @@ input UploadContentInput {
 }
 
 """
-Input for updating existing content with comprehensive fields.
+Input for updating existing content with comprehensive fields. Content updates are used to modify existing content, including title, description, type, data, duration, URL, thumbnail, interactivity type, format, language, and accessibility.
 """
 input UpdateContentInput {
     id: ID!
@@ -1438,7 +1559,7 @@ input UpdateContentInput {
 }
 
 """
-Represents real-time course update information.
+Represents real-time course update information. Course updates are used to notify about changes to a course, including the type of update, the fields that were updated, and the time and user responsible for the update.
 """
 type CourseUpdate {
     course: Course!
@@ -1451,7 +1572,7 @@ type CourseUpdate {
 # Missing Analytics Types
 
 """
-Represents revenue metrics for a course.
+Represents revenue metrics for a course. Revenue metrics provide a summary of the financial performance of a course, including total revenue, average revenue per student, revenue by period, refund rate, and lifetime value.
 """
 type RevenueMetrics {
     totalRevenue: Float!
@@ -1462,7 +1583,7 @@ type RevenueMetrics {
 }
 
 """
-Represents revenue data for a specific period.
+Represents revenue data for a specific period. Revenue periods are used to group revenue data by time intervals, providing a summary of the financial performance over different time periods.
 """
 type RevenuePeriod {
     period: String!
@@ -1474,7 +1595,7 @@ type RevenuePeriod {
 # Missing Aggregation Types
 
 """
-Represents count by difficulty level.
+Represents count by difficulty level. Difficulty counts are used to group courses by their difficulty level, providing a summary of the course complexity and learner readiness.
 """
 type DifficultyCount {
     difficulty: DifficultyLevel!
@@ -1483,7 +1604,7 @@ type DifficultyCount {
 }
 
 """
-Represents count by status.
+Represents count by status. Status counts are used to group content by their status, providing a summary of the content readiness and availability.
 """
 type StatusCount {
     status: ContentStatus!
@@ -1492,7 +1613,7 @@ type StatusCount {
 }
 
 """
-Represents enrollment count ranges.
+Represents enrollment count ranges. Enrollment count ranges are used to group courses by the number of enrollments, providing a summary of the course popularity and engagement.
 """
 type EnrollmentRange {
     min: Int!
@@ -1502,7 +1623,7 @@ type EnrollmentRange {
 }
 
 """
-Represents completion rate ranges.
+Represents completion rate ranges. Completion rate ranges are used to group courses by their completion rate, providing a summary of the course engagement and effectiveness.
 """
 type CompletionRateRange {
     min: Float!
@@ -1512,7 +1633,7 @@ type CompletionRateRange {
 }
 
 """
-Represents rating ranges.
+Represents rating ranges. Rating ranges are used to group courses by their average rating, providing a summary of the course quality and popularity.
 """
 type RatingRange {
     min: Float!
@@ -1526,6 +1647,7 @@ type RatingRange {
 
 """
 Response payload for course operations.
+This payload provides the outcome of course-related operations, including whether the operation was successful, the course data if applicable, and any errors encountered during the process.
 """
 type CoursePayload {
     success: Boolean!
@@ -1535,6 +1657,7 @@ type CoursePayload {
 
 """
 Response payload for module operations.
+This payload delivers the results of module-related operations, indicating success status, the module data if applicable, and any errors that occurred.
 """
 type ModulePayload {
     success: Boolean!
@@ -1544,6 +1667,7 @@ type ModulePayload {
 
 """
 Response payload for lesson operations.
+This payload conveys the outcome of lesson-related operations, including success status, the lesson data if applicable, and any errors encountered.
 """
 type LessonPayload {
     success: Boolean!
@@ -1553,6 +1677,7 @@ type LessonPayload {
 
 """
 Response payload for content validation operations.
+This payload provides the results of content validation checks, indicating whether the content is valid, any validation data, and errors or warnings if present.
 """
 type ContentValidationPayload {
     success: Boolean!
@@ -1561,7 +1686,7 @@ type ContentValidationPayload {
 }
 
 """
-Warning type for content validation.
+Warning type for content validation. Validation warnings are used to notify about potential issues or non-critical problems in content, allowing for adjustments or improvements.
 """
 type ContentValidationWarning {
     code: String!
@@ -1571,7 +1696,7 @@ type ContentValidationWarning {
 }
 
 """
-Configuration for validation rules.
+Configuration for validation rules. Validation rules are used to validate content, ensuring it meets specific criteria or standards.
 """
 type ValidationRuleConfig {
     enabled: Boolean!
@@ -1582,6 +1707,7 @@ type ValidationRuleConfig {
 
 """
 Response payload for certificate operations.
+This payload delivers the results of certificate-related operations, including success status, the certificate data if applicable, and any errors encountered.
 """
 type CertificatePayload {
     success: Boolean!
@@ -1591,6 +1717,7 @@ type CertificatePayload {
 
 """
 Response payload for progress tracking operations.
+This payload provides the outcome of progress tracking operations, indicating success status, the progress data if applicable, and any errors encountered.
 """
 type ProgressPayload {
     success: Boolean!
@@ -1600,6 +1727,7 @@ type ProgressPayload {
 
 """
 Response payload for learning path operations.
+This payload conveys the results of learning path-related operations, including success status, the learning path data if applicable, and any errors encountered.
 """
 type LearningPathPayload {
     success: Boolean!
@@ -1609,6 +1737,7 @@ type LearningPathPayload {
 
 """
 Response payload for certificate validation operations.
+This payload provides the results of certificate validation checks, indicating success status, whether the certificate is valid, detailed validation information, and any errors encountered.
 """
 type CertificateValidationPayload {
     success: Boolean!
@@ -1620,6 +1749,7 @@ type CertificateValidationPayload {
 
 """
 Response payload for assessment operations.
+This payload delivers the results of assessment-related operations, including success status, the assessment data if applicable, and any errors encountered.
 """
 type AssessmentPayload {
     success: Boolean!
@@ -1629,6 +1759,7 @@ type AssessmentPayload {
 
 """
 Response payload for content operations.
+This payload conveys the outcome of content-related operations, including success status, the content data if applicable, and any errors encountered.
 """
 type ContentPayload {
     success: Boolean!
@@ -1638,6 +1769,7 @@ type ContentPayload {
 
 """
 Result of content processing.
+This payload provides information about the success of content processing operations, including processing time, output details, and any transformations applied.
 """
 type ContentProcessingResult {
     success: Boolean!
@@ -1649,6 +1781,7 @@ type ContentProcessingResult {
 
 """
 Response payload for enrollment operations.
+This payload delivers the results of enrollment-related operations, including success status, the enrollment data if applicable, and any errors encountered.
 """
 type EnrollmentPayload {
     success: Boolean!
@@ -1658,6 +1791,7 @@ type EnrollmentPayload {
 
 """
 Response payload for assessment result operations.
+This payload provides the outcome of assessment result-related operations, including success status, the result data if applicable, and any errors encountered.
 """
 type AssessmentResultPayload {
     success: Boolean!
@@ -1667,6 +1801,7 @@ type AssessmentResultPayload {
 
 """
 Represents a content validation result.
+This type provides detailed information about the validity of content, including whether it is valid, any errors or warnings, and additional metadata.
 """
 type ContentValidation {
     isValid: Boolean!
@@ -1676,7 +1811,7 @@ type ContentValidation {
 }
 
 """
-Represents detailed assessment results.
+Represents detailed assessment results. Assessment results are the outcome of a user's attempt at an assessment, including the score, pass status, and feedback.
 """
 type AssessmentResult {
     id: ID!
@@ -1694,6 +1829,7 @@ type AssessmentResult {
 
 """
 Represents a certificate issued for course completion.
+Certificates recognize the successful completion of a course, providing validation and documentation of the learner's achievements.
 """
 type Certificate {
     id: ID!
@@ -1709,7 +1845,7 @@ type Certificate {
 }
 
 """
-Represents detailed progress tracking.
+Represents detailed progress tracking. Progress is the result of a user's activity in a course, including the lesson, module, and overall status.
 """
 type Progress {
     id: ID!
@@ -1727,9 +1863,9 @@ type Progress {
 
 # Error Types
 
-
 """
 Base type for operation errors.
+Operation errors provide information about issues encountered during operations, including error codes, messages, and details about the operation.
 """
 type OperationError implements Error {
     code: String!
@@ -1740,9 +1876,9 @@ type OperationError implements Error {
     operation: String!
 }
 
-
 """
 Base type for validation errors.
+Validation errors highlight issues with data validation, including error codes, messages, and severity levels, helping to ensure data integrity.
 """
 type ValidationError implements Error {
     code: String!
@@ -1755,6 +1891,7 @@ type ValidationError implements Error {
 
 """
 Base type for processing errors.
+Processing errors indicate issues encountered during data processing, including error codes, messages, and failure points, to aid in troubleshooting.
 """
 type ProcessingError implements Error {
     code: String!
@@ -1767,6 +1904,7 @@ type ProcessingError implements Error {
 
 """
 Error type for content validation issues.
+Content validation errors provide information about issues encountered during content validation, including error codes and messages.
 """
 type ContentValidationError {
     code: String!
@@ -1777,6 +1915,7 @@ type ContentValidationError {
 
 """
 Error type for certificate operations.
+Certificate errors highlight issues encountered during certificate-related operations, including error codes and messages.
 """
 type CertificateError {
     code: String!
@@ -1787,6 +1926,7 @@ type CertificateError {
 
 """
 Error type for progress tracking operations.
+Progress errors indicate issues encountered during progress tracking operations, including error codes and messages.
 """
 type ProgressError {
     code: String!
@@ -1797,6 +1937,7 @@ type ProgressError {
 
 """
 Error type for course-related operations.
+Course errors provide information about issues encountered during course-related operations, including error codes and messages.
 """
 type CourseError {
     code: String!
@@ -1807,6 +1948,7 @@ type CourseError {
 
 """
 Error type for module-related operations.
+Module errors highlight issues encountered during module-related operations, including error codes and messages.
 """
 type ModuleError {
     code: String!
@@ -1817,6 +1959,7 @@ type ModuleError {
 
 """
 Error type for lesson-related operations.
+Lesson errors indicate issues encountered during lesson-related operations, including error codes and messages.
 """
 type LessonError {
     code: String!
@@ -1827,6 +1970,7 @@ type LessonError {
 
 """
 Error type for content-related operations.
+Content errors provide information about issues encountered during content-related operations, including error codes and messages.
 """
 type ContentError {
     code: String!
@@ -1837,6 +1981,7 @@ type ContentError {
 
 """
 Error type for learning path operations.
+Learning path errors highlight issues encountered during learning path-related operations, including error codes and messages.
 """
 type LearningPathError {
     code: String!
@@ -1847,6 +1992,7 @@ type LearningPathError {
 
 """
 Error type for assessment-related operations.
+Assessment errors indicate issues encountered during assessment-related operations, including error codes and messages.
 """
 type AssessmentError {
     code: String!
@@ -1857,6 +2003,7 @@ type AssessmentError {
 
 """
 Error type for enrollment-related operations.
+Enrollment errors provide information about issues encountered during enrollment-related operations, including error codes and messages.
 """
 type EnrollmentError {
     code: String!

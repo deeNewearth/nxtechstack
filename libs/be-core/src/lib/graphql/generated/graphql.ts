@@ -15,17 +15,42 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** Custom scalar for handling dates and times in ISO 8601 format. */
+  /**
+   * A custom scalar representing a date and time in ISO 8601 format, including timezone information.
+   * Used for all date and time fields to ensure consistent formatting and parsing throughout the platform.
+   */
   DateTime: { input: any; output: any; }
-  /** Custom scalar for handling JSON data structures. */
+  /**
+   * A custom scalar representing a valid email address with proper formatting and validation.
+   * Used for user emails and any email-related data to ensure accurate communication channels.
+   */
+  EmailAddress: { input: any; output: any; }
+  /**
+   * A custom scalar representing a JSON object.
+   * Allows for storing and transferring complex data structures in a flexible, unstructured format.
+   */
   JSONObject: { input: any; output: any; }
-  /** Custom scalar for handling rich text content. */
+  /**
+   * A custom scalar for rich text content supporting HTML and Markdown syntax.
+   * Facilitates the inclusion of formatted text with styling, links, images, and embedded media within content descriptions and other textual fields.
+   */
   RichText: { input: any; output: any; }
-  /** Custom scalar for handling uploaded files. */
+  /**
+   * A custom scalar representing a valid, properly formatted URL.
+   * Used for all external links, resource locations, and references to media files.
+   */
+  URL: { input: any; output: any; }
+  /**
+   * A custom scalar for handling file uploads via mutations.
+   * Enables clients to upload files, such as course materials or user submissions, as part of GraphQL operations.
+   */
   Upload: { input: any; output: any; }
 };
 
-/** Interface for content requiring access control. */
+/**
+ * Interface for content requiring access control.
+ * Access-controlled entities have defined access levels and groups, ensuring that only authorized users can view or modify them.
+ */
 export type AccessControlled = {
   accessGroups: Array<Scalars['String']['output']>;
   accessLevel: AccessLevel;
@@ -41,7 +66,10 @@ export enum AccessLevel {
   Public = 'PUBLIC'
 }
 
-/** Represents accessibility information. */
+/**
+ * Represents accessibility information.
+ * Accessibility information ensures that content is accessible to all learners, including those with disabilities, by providing features like closed captions and transcripts.
+ */
 export type AccessibilityInfo = {
   __typename?: 'AccessibilityInfo';
   hasAudioDescription: Scalars['Boolean']['output'];
@@ -52,7 +80,10 @@ export type AccessibilityInfo = {
   wcagLevel: Scalars['String']['output'];
 };
 
-/** Input for accessibility settings. */
+/**
+ * Input for accessibility settings.
+ * Defines the accessibility features for content, ensuring it is usable by all learners.
+ */
 export type AccessibilityInput = {
   hasAudioDescription: Scalars['Boolean']['input'];
   hasClosedCaptions: Scalars['Boolean']['input'];
@@ -62,7 +93,10 @@ export type AccessibilityInput = {
   wcagLevel: Scalars['String']['input'];
 };
 
-/** Represents a user achievement. */
+/**
+ * Represents a user achievement.
+ * Achievements recognize significant accomplishments by learners, such as course completions or skill mastery.
+ */
 export type Achievement = Node & {
   __typename?: 'Achievement';
   awardedAt: Scalars['DateTime']['output'];
@@ -75,7 +109,10 @@ export type Achievement = Node & {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-/** Enum for achievement types. */
+/**
+ * Enum for achievement types.
+ * Achievement types classify the various accomplishments learners can earn, recognizing their progress and success in different areas.
+ */
 export enum AchievementType {
   CourseCompletion = 'COURSE_COMPLETION',
   Milestone = 'MILESTONE',
@@ -84,7 +121,11 @@ export enum AchievementType {
   SkillMastery = 'SKILL_MASTERY'
 }
 
-/** Represents an assessment in the system. */
+/**
+ * Represents an assessment in the system.
+ * An assessment is a tool used to evaluate the knowledge, skills, and abilities of learners.
+ * It can include various question types and is used to determine the learner's understanding of the course material.
+ */
 export type Assessment = Auditable & Node & {
   __typename?: 'Assessment';
   auditLog: Array<AuditEntry>;
@@ -107,13 +148,19 @@ export type Assessment = Auditable & Node & {
   weight?: Maybe<Scalars['Float']['output']>;
 };
 
-/** Input for assessment answers. */
+/**
+ * Input for assessment answers.
+ * Defines the structure for submitting answers to assessment questions.
+ */
 export type AssessmentAnswer = {
   answer: Array<Scalars['String']['input']>;
   questionId: Scalars['ID']['input'];
 };
 
-/** Error type for assessment-related operations. */
+/**
+ * Error type for assessment-related operations.
+ * Assessment errors indicate issues encountered during assessment-related operations, including error codes and messages.
+ */
 export type AssessmentError = {
   __typename?: 'AssessmentError';
   code: Scalars['String']['output'];
@@ -122,7 +169,10 @@ export type AssessmentError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for assessments. */
+/**
+ * Metadata for assessments.
+ * Assessment metadata includes grading scales, reviewer information, and submission guidelines, supporting fair and consistent evaluation processes.
+ */
 export type AssessmentMetadata = {
   __typename?: 'AssessmentMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -131,7 +181,10 @@ export type AssessmentMetadata = {
   submissionGuidelines?: Maybe<Scalars['String']['output']>;
 };
 
-/** Response payload for assessment operations. */
+/**
+ * Response payload for assessment operations.
+ * This payload delivers the results of assessment-related operations, including success status, the assessment data if applicable, and any errors encountered.
+ */
 export type AssessmentPayload = {
   __typename?: 'AssessmentPayload';
   assessment?: Maybe<Assessment>;
@@ -139,7 +192,7 @@ export type AssessmentPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Represents detailed assessment results. */
+/** Represents detailed assessment results. Assessment results are the outcome of a user's attempt at an assessment, including the score, pass status, and feedback. */
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessment: Assessment;
@@ -155,7 +208,10 @@ export type AssessmentResult = {
   startedAt: Scalars['DateTime']['output'];
 };
 
-/** Response payload for assessment result operations. */
+/**
+ * Response payload for assessment result operations.
+ * This payload provides the outcome of assessment result-related operations, including success status, the result data if applicable, and any errors encountered.
+ */
 export type AssessmentResultPayload = {
   __typename?: 'AssessmentResultPayload';
   errors?: Maybe<Array<AssessmentError>>;
@@ -163,7 +219,10 @@ export type AssessmentResultPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Represents assessment statistics. */
+/**
+ * Represents assessment statistics.
+ * Assessment statistics offer detailed insights into the performance of assessments, including average scores, pass rates, and submission rates.
+ */
 export type AssessmentStats = {
   __typename?: 'AssessmentStats';
   averageAttempts: Scalars['Float']['output'];
@@ -172,7 +231,10 @@ export type AssessmentStats = {
   submissionRate: Scalars['Float']['output'];
 };
 
-/** Tracks completion status for assessments. */
+/**
+ * Tracks completion status for assessments.
+ * Assessment status indicates the current state of an assessment, from initial assignment to final grading.
+ */
 export enum AssessmentStatus {
   Failed = 'FAILED',
   Graded = 'GRADED',
@@ -194,7 +256,7 @@ export enum AssessmentType {
 
 /**
  * Represents a single change within an audit entry.
- * Used to track specific field changes in audited entities.
+ * Audit changes detail specific modifications made to fields within an entity, helping to track the history of changes over time.
  */
 export type AuditChange = {
   __typename?: 'AuditChange';
@@ -207,7 +269,7 @@ export type AuditChange = {
 
 /**
  * Represents an audit entry for tracking changes.
- * Implements comprehensive audit trail functionality.
+ * Audit entries log changes made to entities within the system, providing a comprehensive audit trail for accountability and transparency.
  */
 export type AuditEntry = Node & {
   __typename?: 'AuditEntry';
@@ -226,7 +288,10 @@ export type AuditEntry = Node & {
   userId: Scalars['String']['output'];
 };
 
-/** Interface for entities requiring audit tracking. */
+/**
+ * Interface for entities requiring audit tracking.
+ * Auditable entities maintain a history of changes, including who made the changes and when, supporting accountability and transparency.
+ */
 export type Auditable = {
   auditLog: Array<AuditEntry>;
   createdBy: Scalars['String']['output'];
@@ -245,13 +310,19 @@ export type BaseContentInput = {
   type: ContentType;
 };
 
-/** Base fields for all metadata types. */
+/**
+ * Base fields for all metadata types.
+ * Metadata inputs provide a flexible structure for additional data associated with entities, supporting customization and integration.
+ */
 export type BaseMetadataInput = {
   customFields?: InputMaybe<Scalars['JSONObject']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Represents a certificate issued for course completion. */
+/**
+ * Represents a certificate issued for course completion.
+ * Certificates recognize the successful completion of a course, providing validation and documentation of the learner's achievements.
+ */
 export type Certificate = {
   __typename?: 'Certificate';
   course: Course;
@@ -266,7 +337,10 @@ export type Certificate = {
   validationHash: Scalars['String']['output'];
 };
 
-/** Error type for certificate operations. */
+/**
+ * Error type for certificate operations.
+ * Certificate errors highlight issues encountered during certificate-related operations, including error codes and messages.
+ */
 export type CertificateError = {
   __typename?: 'CertificateError';
   code: Scalars['String']['output'];
@@ -275,7 +349,10 @@ export type CertificateError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for certificates. */
+/**
+ * Metadata for certificates.
+ * Certificate metadata contains information about the certificate's template, issuer, and verification details, ensuring authenticity and traceability.
+ */
 export type CertificateMetadata = {
   __typename?: 'CertificateMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -285,7 +362,10 @@ export type CertificateMetadata = {
   verificationUrl: Scalars['String']['output'];
 };
 
-/** Response payload for certificate operations. */
+/**
+ * Response payload for certificate operations.
+ * This payload delivers the results of certificate-related operations, including success status, the certificate data if applicable, and any errors encountered.
+ */
 export type CertificatePayload = {
   __typename?: 'CertificatePayload';
   certificate?: Maybe<Certificate>;
@@ -293,7 +373,10 @@ export type CertificatePayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Enum for certificate status. */
+/**
+ * Enum for certificate status.
+ * Certificate status indicates the current validity and state of a certificate, from issuance to potential revocation.
+ */
 export enum CertificateStatus {
   Expired = 'EXPIRED',
   Pending = 'PENDING',
@@ -301,7 +384,10 @@ export enum CertificateStatus {
   Valid = 'VALID'
 }
 
-/** Defines types of certificates available. */
+/**
+ * Defines types of certificates available.
+ * Certificate types categorize the different kinds of certificates that can be awarded to learners, based on their achievements.
+ */
 export enum CertificateType {
   Achievement = 'ACHIEVEMENT',
   Certification = 'CERTIFICATION',
@@ -309,7 +395,10 @@ export enum CertificateType {
   Participation = 'PARTICIPATION'
 }
 
-/** Response payload for certificate validation operations. */
+/**
+ * Response payload for certificate validation operations.
+ * This payload provides the results of certificate validation checks, indicating success status, whether the certificate is valid, detailed validation information, and any errors encountered.
+ */
 export type CertificateValidationPayload = {
   __typename?: 'CertificateValidationPayload';
   certificate?: Maybe<Certificate>;
@@ -319,7 +408,10 @@ export type CertificateValidationPayload = {
   validationDetails?: Maybe<Scalars['JSONObject']['output']>;
 };
 
-/** Enum for certificate types. */
+/**
+ * Enum for certificate types.
+ * Certification types specify the nature of the certification awarded, reflecting the learner's accomplishments and the context of the award.
+ */
 export enum CertificationType {
   Achievement = 'ACHIEVEMENT',
   Attendance = 'ATTENDANCE',
@@ -328,7 +420,10 @@ export enum CertificationType {
   Participation = 'PARTICIPATION'
 }
 
-/** Represents completion rate data. */
+/**
+ * Represents completion rate data.
+ * Completion rate data provides information on how many learners have completed specific content within a course, along with the average time spent.
+ */
 export type CompletionRate = {
   __typename?: 'CompletionRate';
   averageTimeSpent: Scalars['Int']['output'];
@@ -336,7 +431,7 @@ export type CompletionRate = {
   rate: Scalars['Float']['output'];
 };
 
-/** Represents completion rate ranges. */
+/** Represents completion rate ranges. Completion rate ranges are used to group courses by their completion rate, providing a summary of the course engagement and effectiveness. */
 export type CompletionRateRange = {
   __typename?: 'CompletionRateRange';
   count: Scalars['Int']['output'];
@@ -345,7 +440,10 @@ export type CompletionRateRange = {
   min: Scalars['Float']['output'];
 };
 
-/** Represents content within a lesson. */
+/**
+ * Represents the actual educational material within a lesson.
+ * Content can be of various types, such as video, text, or interactive media, and is the primary medium through which learners engage with the lesson material.
+ */
 export type Content = {
   __typename?: 'Content';
   accessibility?: Maybe<AccessibilityInfo>;
@@ -364,7 +462,10 @@ export type Content = {
   version?: Maybe<Scalars['String']['output']>;
 };
 
-/** Error type for content-related operations. */
+/**
+ * Error type for content-related operations.
+ * Content errors provide information about issues encountered during content-related operations, including error codes and messages.
+ */
 export type ContentError = {
   __typename?: 'ContentError';
   code: Scalars['String']['output'];
@@ -373,7 +474,10 @@ export type ContentError = {
   message: Scalars['String']['output'];
 };
 
-/** Input for uploading new content. */
+/**
+ * Input for uploading new content.
+ * Facilitates the addition of new content to the platform, supporting various content types and associated metadata.
+ */
 export type ContentInput = {
   accessibility?: InputMaybe<AccessibilityInput>;
   data?: InputMaybe<Scalars['JSONObject']['input']>;
@@ -386,7 +490,10 @@ export type ContentInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Metadata for content. */
+/**
+ * Metadata for content.
+ * Content metadata provides information about the source system, technical details, and custom fields, enhancing content management and integration.
+ */
 export type ContentMetadata = {
   __typename?: 'ContentMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -395,14 +502,20 @@ export type ContentMetadata = {
   technicalDetails?: Maybe<Scalars['JSONObject']['output']>;
 };
 
-/** Input for content metadata. */
+/**
+ * Input for content metadata.
+ * Captures metadata for content, including source system and technical details.
+ */
 export type ContentMetadataInput = {
   customFields?: InputMaybe<Scalars['JSONObject']['input']>;
   sourceSystem?: InputMaybe<Scalars['String']['input']>;
   technicalDetails?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
-/** Response payload for content operations. */
+/**
+ * Response payload for content operations.
+ * This payload conveys the outcome of content-related operations, including success status, the content data if applicable, and any errors encountered.
+ */
 export type ContentPayload = {
   __typename?: 'ContentPayload';
   content?: Maybe<Content>;
@@ -410,7 +523,10 @@ export type ContentPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Result of content processing. */
+/**
+ * Result of content processing.
+ * This payload provides information about the success of content processing operations, including processing time, output details, and any transformations applied.
+ */
 export type ContentProcessingResult = {
   __typename?: 'ContentProcessingResult';
   metadata?: Maybe<Scalars['JSONObject']['output']>;
@@ -420,7 +536,10 @@ export type ContentProcessingResult = {
   transformations?: Maybe<Array<Scalars['String']['output']>>;
 };
 
-/** Input for tracking content progress. */
+/**
+ * Input for tracking content progress.
+ * Records progress details for content consumption, including completion percentage and time spent.
+ */
 export type ContentProgressInput = {
   completionStatus: ProgressStatus;
   contentId: Scalars['ID']['input'];
@@ -451,7 +570,10 @@ export enum ContentType {
   Video = 'VIDEO'
 }
 
-/** Represents a content validation result. */
+/**
+ * Represents a content validation result.
+ * This type provides detailed information about the validity of content, including whether it is valid, any errors or warnings, and additional metadata.
+ */
 export type ContentValidation = {
   __typename?: 'ContentValidation';
   errors?: Maybe<Array<ContentValidationError>>;
@@ -460,7 +582,10 @@ export type ContentValidation = {
   warnings?: Maybe<Array<ContentValidationWarning>>;
 };
 
-/** Error type for content validation issues. */
+/**
+ * Error type for content validation issues.
+ * Content validation errors provide information about issues encountered during content validation, including error codes and messages.
+ */
 export type ContentValidationError = {
   __typename?: 'ContentValidationError';
   code: Scalars['String']['output'];
@@ -469,7 +594,10 @@ export type ContentValidationError = {
   message: Scalars['String']['output'];
 };
 
-/** Response payload for content validation operations. */
+/**
+ * Response payload for content validation operations.
+ * This payload provides the results of content validation checks, indicating whether the content is valid, any validation data, and errors or warnings if present.
+ */
 export type ContentValidationPayload = {
   __typename?: 'ContentValidationPayload';
   errors?: Maybe<Array<ContentError>>;
@@ -477,7 +605,7 @@ export type ContentValidationPayload = {
   validation?: Maybe<ContentValidation>;
 };
 
-/** Warning type for content validation. */
+/** Warning type for content validation. Validation warnings are used to notify about potential issues or non-critical problems in content, allowing for adjustments or improvements. */
 export type ContentValidationWarning = {
   __typename?: 'ContentValidationWarning';
   code: Scalars['String']['output'];
@@ -486,7 +614,11 @@ export type ContentValidationWarning = {
   severity: WarningSeverity;
 };
 
-/** Represents a complete course in the learning platform. */
+/**
+ * Represents a complete course offered on the learning platform.
+ * A course is a structured set of educational materials designed to teach specific skills or knowledge.
+ * It includes modules, lessons, assessments, and other resources necessary for learners to achieve their learning objectives.
+ */
 export type Course = AccessControlled & Auditable & Node & Searchable & {
   __typename?: 'Course';
   accessGroups: Array<Scalars['String']['output']>;
@@ -520,7 +652,10 @@ export type Course = AccessControlled & Auditable & Node & Searchable & {
   visibility: Scalars['Boolean']['output'];
 };
 
-/** Represents aggregated course data. */
+/**
+ * Represents aggregated course data.
+ * Course aggregations provide summary statistics on courses, such as counts by difficulty level, status, and enrollment ranges.
+ */
 export type CourseAggregations = {
   __typename?: 'CourseAggregations';
   byCompletionRate: Array<CompletionRateRange>;
@@ -530,7 +665,10 @@ export type CourseAggregations = {
   byStatus: Array<StatusCount>;
 };
 
-/** Represents analytics data for a course. */
+/**
+ * Represents analytics data for a course.
+ * Course analytics provide insights into the performance and engagement of a course, including metrics like enrollment numbers, completion rates, and revenue.
+ */
 export type CourseAnalytics = {
   __typename?: 'CourseAnalytics';
   activeEnrollments: Scalars['Int']['output'];
@@ -545,7 +683,10 @@ export type CourseAnalytics = {
   trendsData: TrendsData;
 };
 
-/** Connection type for paginated course results. */
+/**
+ * Connection type for paginated course results.
+ * Course connections facilitate the retrieval of paginated course data, including edges, pagination information, and aggregations.
+ */
 export type CourseConnection = {
   __typename?: 'CourseConnection';
   aggregations?: Maybe<CourseAggregations>;
@@ -554,14 +695,20 @@ export type CourseConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** Edge type for course connections. */
+/**
+ * Edge type for course connections.
+ * Course edges link individual course nodes within a connection, providing a cursor for pagination and navigation.
+ */
 export type CourseEdge = {
   __typename?: 'CourseEdge';
   cursor: Scalars['String']['output'];
   node: Course;
 };
 
-/** Error type for course-related operations. */
+/**
+ * Error type for course-related operations.
+ * Course errors provide information about issues encountered during course-related operations, including error codes and messages.
+ */
 export type CourseError = {
   __typename?: 'CourseError';
   code: Scalars['String']['output'];
@@ -570,7 +717,10 @@ export type CourseError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for courses. */
+/**
+ * Metadata for courses.
+ * Course metadata provides additional information about a course, such as language, duration, and target audience, to enhance discoverability and relevance.
+ */
 export type CourseMetadata = {
   __typename?: 'CourseMetadata';
   certificationTrack: Scalars['Boolean']['output'];
@@ -582,7 +732,10 @@ export type CourseMetadata = {
   targetAudience: Array<Scalars['String']['output']>;
 };
 
-/** Input for course metadata. */
+/**
+ * Input for course metadata.
+ * Captures additional information about a course, such as language, estimated duration, and target audience.
+ */
 export type CourseMetadataInput = {
   certificationTrack?: InputMaybe<Scalars['Boolean']['input']>;
   customFields?: InputMaybe<Scalars['JSONObject']['input']>;
@@ -592,7 +745,10 @@ export type CourseMetadataInput = {
   targetAudience: Array<Scalars['String']['input']>;
 };
 
-/** Response payload for course operations. */
+/**
+ * Response payload for course operations.
+ * This payload provides the outcome of course-related operations, including whether the operation was successful, the course data if applicable, and any errors encountered during the process.
+ */
 export type CoursePayload = {
   __typename?: 'CoursePayload';
   course?: Maybe<Course>;
@@ -600,7 +756,10 @@ export type CoursePayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Input for course searching and filtering. */
+/**
+ * Input for course searching and filtering.
+ * Provides criteria for searching and filtering courses, including status, difficulty level, and tags.
+ */
 export type CourseSearchFilter = {
   difficultyLevel?: InputMaybe<Array<DifficultyLevel>>;
   duration?: InputMaybe<DurationRangeInput>;
@@ -613,7 +772,7 @@ export type CourseSearchFilter = {
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
-/** Represents real-time course update information. */
+/** Represents real-time course update information. Course updates are used to notify about changes to a course, including the type of update, the fields that were updated, and the time and user responsible for the update. */
 export type CourseUpdate = {
   __typename?: 'CourseUpdate';
   course: Course;
@@ -623,7 +782,10 @@ export type CourseUpdate = {
   updatedFields: Array<Scalars['String']['output']>;
 };
 
-/** Enum for course update types. */
+/**
+ * Enum for course update types.
+ * Course update types describe the nature of changes made to a course, reflecting modifications in content, status, or structure.
+ */
 export enum CourseUpdateType {
   AssessmentAdded = 'ASSESSMENT_ADDED',
   AssessmentUpdated = 'ASSESSMENT_UPDATED',
@@ -633,21 +795,27 @@ export enum CourseUpdateType {
   StatusChanged = 'STATUS_CHANGED'
 }
 
-/** Input for creating an assessment. */
+/**
+ * Input for creating an assessment.
+ * Specifies the details needed to create a new assessment, including questions and grading criteria.
+ */
 export type CreateAssessmentInput = {
   description: Scalars['String']['input'];
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   maxAttempts: Scalars['Int']['input'];
   passingScore: Scalars['Float']['input'];
   questions: Array<QuestionInput>;
-  rubric?: InputMaybe<RubricInput>;
+  rubric: RubricInput;
   timeLimit?: InputMaybe<Scalars['Int']['input']>;
   title: Scalars['String']['input'];
   type: AssessmentType;
-  weight?: InputMaybe<Scalars['Float']['input']>;
+  weight: Scalars['Float']['input'];
 };
 
-/** Input for creating a new course. */
+/**
+ * Input for creating a new course.
+ * This input captures all necessary details to initialize a new course, including its title, description, difficulty level, and metadata.
+ */
 export type CreateCourseInput = {
   accessLevel: AccessLevel;
   description: Scalars['String']['input'];
@@ -659,7 +827,10 @@ export type CreateCourseInput = {
   title: Scalars['String']['input'];
 };
 
-/** Input for creating an enrollment. */
+/**
+ * Input for creating an enrollment.
+ * Specifies the details needed to enroll a user in a course, including user and course IDs.
+ */
 export type CreateEnrollmentInput = {
   courseId: Scalars['ID']['input'];
   metadata?: InputMaybe<Scalars['JSONObject']['input']>;
@@ -667,7 +838,10 @@ export type CreateEnrollmentInput = {
   userId: Scalars['ID']['input'];
 };
 
-/** Input for creating a new lesson. */
+/**
+ * Input for creating a new lesson.
+ * Specifies the details needed to create a lesson within a module, including its content, duration, and order.
+ */
 export type CreateLessonInput = {
   content: ContentInput;
   description: Scalars['String']['input'];
@@ -680,7 +854,10 @@ export type CreateLessonInput = {
   type: ContentType;
 };
 
-/** Input for creating a new module. */
+/**
+ * Input for creating a new module.
+ * Captures the details required to add a new module to a course, including its title, description, and order within the course.
+ */
 export type CreateModuleInput = {
   courseId: Scalars['ID']['input'];
   description: Scalars['String']['input'];
@@ -691,13 +868,16 @@ export type CreateModuleInput = {
   title: Scalars['String']['input'];
 };
 
-/** Input for date ranges. */
+/**
+ * Input for date ranges.
+ * Specifies a range of dates for filtering data, including start and end dates.
+ */
 export type DateRangeInput = {
   endDate: Scalars['DateTime']['input'];
   startDate: Scalars['DateTime']['input'];
 };
 
-/** Represents count by difficulty level. */
+/** Represents count by difficulty level. Difficulty counts are used to group courses by their difficulty level, providing a summary of the course complexity and learner readiness. */
 export type DifficultyCount = {
   __typename?: 'DifficultyCount';
   count: Scalars['Int']['output'];
@@ -713,14 +893,20 @@ export enum DifficultyLevel {
   Intermediate = 'INTERMEDIATE'
 }
 
-/** Input type for duration range filtering. */
+/**
+ * Input type for duration range filtering.
+ * Defines the range of durations for filtering courses, including minimum and maximum values and units. The default unit is minutes.
+ */
 export type DurationRangeInput = {
   max?: InputMaybe<Scalars['Int']['input']>;
   min?: InputMaybe<Scalars['Int']['input']>;
   unit?: InputMaybe<DurationUnit>;
 };
 
-/** Enum for duration units. */
+/**
+ * Enum for duration units.
+ * Duration units specify the measurement units for time-related fields, ensuring consistency in representing durations across the platform.
+ */
 export enum DurationUnit {
   Days = 'DAYS',
   Hours = 'HOURS',
@@ -728,7 +914,10 @@ export enum DurationUnit {
   Weeks = 'WEEKS'
 }
 
-/** Represents engagement metrics for a course. */
+/**
+ * Represents engagement metrics for a course.
+ * Engagement metrics track how learners interact with the course content, including session durations, participation rates, and content completion rates.
+ */
 export type EngagementMetrics = {
   __typename?: 'EngagementMetrics';
   averageSessionDuration: Scalars['Int']['output'];
@@ -737,7 +926,10 @@ export type EngagementMetrics = {
   discussionParticipationRate: Scalars['Float']['output'];
 };
 
-/** Represents a user's enrollment in a course. */
+/**
+ * Represents a user's enrollment in a course.
+ * Enrollment tracks a user's participation in a course, including their progress, completion status, and any assessments they have taken.
+ */
 export type Enrollment = Node & Trackable & {
   __typename?: 'Enrollment';
   assessmentResults: Array<AssessmentResult>;
@@ -757,7 +949,10 @@ export type Enrollment = Node & Trackable & {
   user: User;
 };
 
-/** Represents a connection type for enrollments. */
+/**
+ * Represents a connection type for enrollments.
+ * Enrollment connections facilitate the retrieval of paginated enrollment data, including edges and pagination information.
+ */
 export type EnrollmentConnection = {
   __typename?: 'EnrollmentConnection';
   edges: Array<EnrollmentEdge>;
@@ -765,14 +960,20 @@ export type EnrollmentConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** Represents an enrollment edge. */
+/**
+ * Represents an enrollment edge.
+ * Enrollment edges link individual enrollment nodes within a connection, providing a cursor for pagination.
+ */
 export type EnrollmentEdge = {
   __typename?: 'EnrollmentEdge';
   cursor: Scalars['String']['output'];
   node: Enrollment;
 };
 
-/** Error type for enrollment-related operations. */
+/**
+ * Error type for enrollment-related operations.
+ * Enrollment errors provide information about issues encountered during enrollment-related operations, including error codes and messages.
+ */
 export type EnrollmentError = {
   __typename?: 'EnrollmentError';
   code: Scalars['String']['output'];
@@ -781,7 +982,10 @@ export type EnrollmentError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for enrollments. */
+/**
+ * Metadata for enrollments.
+ * Enrollment metadata captures details about the enrollment source, payment information, and promotional codes, providing context for enrollment activities.
+ */
 export type EnrollmentMetadata = {
   __typename?: 'EnrollmentMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -790,7 +994,10 @@ export type EnrollmentMetadata = {
   promotionalCode?: Maybe<Scalars['String']['output']>;
 };
 
-/** Response payload for enrollment operations. */
+/**
+ * Response payload for enrollment operations.
+ * This payload delivers the results of enrollment-related operations, including success status, the enrollment data if applicable, and any errors encountered.
+ */
 export type EnrollmentPayload = {
   __typename?: 'EnrollmentPayload';
   enrollment?: Maybe<Enrollment>;
@@ -798,7 +1005,7 @@ export type EnrollmentPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Represents real-time enrollment progress updates. */
+/** Represents real-time enrollment progress updates. Enrollment progress updates are used to notify about changes to a user's progress in a course, including the previous and current progress, the time of update, and the user responsible for the update. */
 export type EnrollmentProgress = {
   __typename?: 'EnrollmentProgress';
   completedItems: Array<Scalars['ID']['output']>;
@@ -809,7 +1016,7 @@ export type EnrollmentProgress = {
   updatedBy: Scalars['String']['output'];
 };
 
-/** Represents enrollment count ranges. */
+/** Represents enrollment count ranges. Enrollment count ranges are used to group courses by the number of enrollments, providing a summary of the course popularity and engagement. */
 export type EnrollmentRange = {
   __typename?: 'EnrollmentRange';
   count: Scalars['Int']['output'];
@@ -818,7 +1025,10 @@ export type EnrollmentRange = {
   min: Scalars['Int']['output'];
 };
 
-/** Base interface for all error types to ensure consistency. */
+/**
+ * Base interface for all error types to ensure consistency.
+ * Error interfaces standardize the structure of error messages, providing codes, messages, and additional details for troubleshooting.
+ */
 export type Error = {
   code: Scalars['String']['output'];
   details?: Maybe<Scalars['JSONObject']['output']>;
@@ -826,7 +1036,10 @@ export type Error = {
   message: Scalars['String']['output'];
 };
 
-/** Represents configuration for document generation. */
+/**
+ * Represents configuration for document generation.
+ * Generation configurations define the settings and templates used for creating documents, such as certificates or reports.
+ */
 export type GenerationConfig = {
   __typename?: 'GenerationConfig';
   format: Scalars['String']['output'];
@@ -837,7 +1050,10 @@ export type GenerationConfig = {
   version: Scalars['String']['output'];
 };
 
-/** Input for grading an assessment. */
+/**
+ * Input for grading an assessment.
+ * Captures the details required to record grades for an assessment, including scores, feedback, and rubric evaluations.
+ */
 export type GradeAssessmentInput = {
   assessmentId: Scalars['ID']['input'];
   enrollmentId: Scalars['ID']['input'];
@@ -847,7 +1063,10 @@ export type GradeAssessmentInput = {
   score: Scalars['Float']['input'];
 };
 
-/** Represents an instructor. */
+/**
+ * Represents an instructor.
+ * Instructors are users who create and manage courses, providing educational content and guidance to learners.
+ */
 export type Instructor = Node & {
   __typename?: 'Instructor';
   biography?: Maybe<Scalars['String']['output']>;
@@ -861,7 +1080,10 @@ export type Instructor = Node & {
   user: User;
 };
 
-/** Represents a learning path. */
+/**
+ * Represents a learning path.
+ * Learning paths guide learners through a sequence of courses, helping them achieve specific educational goals or career objectives.
+ */
 export type LearningPath = Node & {
   __typename?: 'LearningPath';
   courses: Array<Course>;
@@ -875,7 +1097,10 @@ export type LearningPath = Node & {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-/** Error type for learning path operations. */
+/**
+ * Error type for learning path operations.
+ * Learning path errors highlight issues encountered during learning path-related operations, including error codes and messages.
+ */
 export type LearningPathError = {
   __typename?: 'LearningPathError';
   code: Scalars['String']['output'];
@@ -884,7 +1109,10 @@ export type LearningPathError = {
   message: Scalars['String']['output'];
 };
 
-/** Response payload for learning path operations. */
+/**
+ * Response payload for learning path operations.
+ * This payload conveys the results of learning path-related operations, including success status, the learning path data if applicable, and any errors encountered.
+ */
 export type LearningPathPayload = {
   __typename?: 'LearningPathPayload';
   errors?: Maybe<Array<LearningPathError>>;
@@ -892,7 +1120,11 @@ export type LearningPathPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Represents a lesson within a module. */
+/**
+ * Represents an individual lesson within a module.
+ * Lessons are the building blocks of a module, containing educational content such as videos, texts, or interactive activities.
+ * They are designed to convey specific information or skills to the learner.
+ */
 export type Lesson = AccessControlled & Auditable & Node & Searchable & {
   __typename?: 'Lesson';
   accessGroups: Array<Scalars['String']['output']>;
@@ -919,7 +1151,10 @@ export type Lesson = AccessControlled & Auditable & Node & Searchable & {
   visibility: Scalars['Boolean']['output'];
 };
 
-/** Connection type for paginated lesson results. */
+/**
+ * Connection type for paginated lesson results.
+ * Lesson connections provide access to paginated lesson data, helping learners and instructors manage and explore lesson content.
+ */
 export type LessonConnection = {
   __typename?: 'LessonConnection';
   edges: Array<LessonEdge>;
@@ -927,14 +1162,20 @@ export type LessonConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** Edge type for lesson connections. */
+/**
+ * Edge type for lesson connections.
+ * Lesson edges link individual lesson nodes within a connection, facilitating pagination and content exploration.
+ */
 export type LessonEdge = {
   __typename?: 'LessonEdge';
   cursor: Scalars['String']['output'];
   node: Lesson;
 };
 
-/** Error type for lesson-related operations. */
+/**
+ * Error type for lesson-related operations.
+ * Lesson errors indicate issues encountered during lesson-related operations, including error codes and messages.
+ */
 export type LessonError = {
   __typename?: 'LessonError';
   code: Scalars['String']['output'];
@@ -943,7 +1184,10 @@ export type LessonError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for lessons. */
+/**
+ * Metadata for lessons.
+ * Lesson metadata describes the interactivity level, resource type, and technical requirements of a lesson, supporting effective content delivery.
+ */
 export type LessonMetadata = {
   __typename?: 'LessonMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -952,15 +1196,21 @@ export type LessonMetadata = {
   technicalRequirements: Array<Scalars['String']['output']>;
 };
 
-/** Input for lesson metadata. */
+/**
+ * Input for lesson metadata.
+ * Describes metadata for a lesson, including interactivity level and technical requirements.
+ */
 export type LessonMetadataInput = {
   customFields?: InputMaybe<Scalars['JSONObject']['input']>;
   interactivityLevel: Scalars['String']['input'];
   resourceType: Scalars['String']['input'];
-  technicalRequirements?: InputMaybe<Array<Scalars['String']['input']>>;
+  technicalRequirements: Array<Scalars['String']['input']>;
 };
 
-/** Response payload for lesson operations. */
+/**
+ * Response payload for lesson operations.
+ * This payload conveys the outcome of lesson-related operations, including success status, the lesson data if applicable, and any errors encountered.
+ */
 export type LessonPayload = {
   __typename?: 'LessonPayload';
   errors?: Maybe<Array<LessonError>>;
@@ -969,7 +1219,7 @@ export type LessonPayload = {
 };
 
 export type LoginInput = {
-  email: Scalars['String']['input'];
+  email: Scalars['EmailAddress']['input'];
   password: Scalars['String']['input'];
 };
 
@@ -978,14 +1228,21 @@ export type LoginResponse = {
   accessToken: Scalars['String']['output'];
 };
 
-/** Base interface for all metadata types to ensure consistency. */
+/**
+ * Base interface for all metadata types to ensure consistency.
+ * Metadata interfaces provide a common structure for additional information associated with entities, supporting extensibility and integration.
+ */
 export type Metadata = {
   customFields?: Maybe<Scalars['JSONObject']['output']>;
   lastUpdated?: Maybe<Scalars['DateTime']['output']>;
   version?: Maybe<Scalars['Int']['output']>;
 };
 
-/** Represents a module within a course. */
+/**
+ * Represents a module within a course, grouping related lessons together.
+ * Modules are subdivisions of a course that focus on specific topics or skills.
+ * They help organize the course content into manageable sections, each containing lessons and assessments.
+ */
 export type Module = Auditable & Node & Searchable & {
   __typename?: 'Module';
   auditLog: Array<AuditEntry>;
@@ -1008,7 +1265,10 @@ export type Module = Auditable & Node & Searchable & {
   version: Scalars['Int']['output'];
 };
 
-/** Connection type for paginated module results. */
+/**
+ * Connection type for paginated module results.
+ * Module connections enable the retrieval of paginated module data, supporting efficient navigation and exploration of course structures.
+ */
 export type ModuleConnection = {
   __typename?: 'ModuleConnection';
   edges: Array<ModuleEdge>;
@@ -1016,14 +1276,20 @@ export type ModuleConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** Edge type for module connections. */
+/**
+ * Edge type for module connections.
+ * Module edges connect individual module nodes within a connection, supporting pagination and efficient data retrieval.
+ */
 export type ModuleEdge = {
   __typename?: 'ModuleEdge';
   cursor: Scalars['String']['output'];
   node: Module;
 };
 
-/** Error type for module-related operations. */
+/**
+ * Error type for module-related operations.
+ * Module errors highlight issues encountered during module-related operations, including error codes and messages.
+ */
 export type ModuleError = {
   __typename?: 'ModuleError';
   code: Scalars['String']['output'];
@@ -1032,7 +1298,10 @@ export type ModuleError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for modules. */
+/**
+ * Metadata for modules.
+ * Module metadata includes details like estimated duration and learning objectives, helping to organize and present module content effectively.
+ */
 export type ModuleMetadata = {
   __typename?: 'ModuleMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -1041,14 +1310,20 @@ export type ModuleMetadata = {
   resourceCount: Scalars['Int']['output'];
 };
 
-/** Input for module metadata. */
+/**
+ * Input for module metadata.
+ * Provides metadata details for a module, including estimated duration and learning objectives.
+ */
 export type ModuleMetadataInput = {
   customFields?: InputMaybe<Scalars['JSONObject']['input']>;
   estimatedDuration: Scalars['Int']['input'];
   learningObjectives: Array<Scalars['String']['input']>;
 };
 
-/** Response payload for module operations. */
+/**
+ * Response payload for module operations.
+ * This payload delivers the results of module-related operations, indicating success status, the module data if applicable, and any errors that occurred.
+ */
 export type ModulePayload = {
   __typename?: 'ModulePayload';
   errors?: Maybe<Array<ModuleError>>;
@@ -1651,14 +1926,20 @@ export type MutationValidateContentArgs = {
   id: Scalars['ID']['input'];
 };
 
-/** Base interface for all node types in the system. */
+/**
+ * Base interface for all node types in the system.
+ * Nodes are fundamental entities within the system, each with a unique identifier and timestamps for creation and updates.
+ */
 export type Node = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-/** Base type for operation errors. */
+/**
+ * Base type for operation errors.
+ * Operation errors provide information about issues encountered during operations, including error codes, messages, and details about the operation.
+ */
 export type OperationError = Error & {
   __typename?: 'OperationError';
   code: Scalars['String']['output'];
@@ -1669,7 +1950,10 @@ export type OperationError = Error & {
   timestamp: Scalars['DateTime']['output'];
 };
 
-/** Represents standard Relay pagination information. */
+/**
+ * Represents standard Relay pagination information.
+ * Pagination information helps manage large datasets by providing details on the current page, available pages, and navigation options.
+ */
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor?: Maybe<Scalars['String']['output']>;
@@ -1678,7 +1962,10 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-/** Input for pagination. */
+/**
+ * Input for pagination.
+ * Defines parameters for paginating results, including the number of items and cursor positions. The default direction is forward.
+ */
 export type PaginationInput = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -1686,14 +1973,20 @@ export type PaginationInput = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Input type for price range filtering. */
+/**
+ * Input type for price range filtering.
+ * Specifies the range of prices for filtering courses, including minimum and maximum values. The default currency is USD.
+ */
 export type PriceRangeInput = {
   currency?: InputMaybe<Scalars['String']['input']>;
   max?: InputMaybe<Scalars['Float']['input']>;
   min?: InputMaybe<Scalars['Float']['input']>;
 };
 
-/** Base type for processing errors. */
+/**
+ * Base type for processing errors.
+ * Processing errors indicate issues encountered during data processing, including error codes, messages, and failure points, to aid in troubleshooting.
+ */
 export type ProcessingError = Error & {
   __typename?: 'ProcessingError';
   code: Scalars['String']['output'];
@@ -1704,7 +1997,7 @@ export type ProcessingError = Error & {
   processId: Scalars['String']['output'];
 };
 
-/** Represents detailed progress tracking. */
+/** Represents detailed progress tracking. Progress is the result of a user's activity in a course, including the lesson, module, and overall status. */
 export type Progress = {
   __typename?: 'Progress';
   completedItems: Scalars['Int']['output'];
@@ -1720,7 +2013,10 @@ export type Progress = {
   totalItems: Scalars['Int']['output'];
 };
 
-/** Error type for progress tracking operations. */
+/**
+ * Error type for progress tracking operations.
+ * Progress errors indicate issues encountered during progress tracking operations, including error codes and messages.
+ */
 export type ProgressError = {
   __typename?: 'ProgressError';
   code: Scalars['String']['output'];
@@ -1729,7 +2025,10 @@ export type ProgressError = {
   message: Scalars['String']['output'];
 };
 
-/** Metadata for progress tracking. */
+/**
+ * Metadata for progress tracking.
+ * Progress metadata records detailed information about a learner's progress, including checkpoints and device usage, to support personalized learning experiences.
+ */
 export type ProgressMetadata = {
   __typename?: 'ProgressMetadata';
   customFields?: Maybe<Scalars['JSONObject']['output']>;
@@ -1738,7 +2037,10 @@ export type ProgressMetadata = {
   timePerModule?: Maybe<Scalars['JSONObject']['output']>;
 };
 
-/** Response payload for progress tracking operations. */
+/**
+ * Response payload for progress tracking operations.
+ * This payload provides the outcome of progress tracking operations, indicating success status, the progress data if applicable, and any errors encountered.
+ */
 export type ProgressPayload = {
   __typename?: 'ProgressPayload';
   errors?: Maybe<Array<ProgressError>>;
@@ -1885,7 +2187,10 @@ export type QueryValidateCertificateArgs = {
   id: Scalars['ID']['input'];
 };
 
-/** Represents a question in an assessment. */
+/**
+ * Represents a question in an assessment.
+ * Questions are the fundamental components of assessments, designed to evaluate a learner's understanding of the course material.
+ */
 export type Question = {
   __typename?: 'Question';
   content: Scalars['String']['output'];
@@ -1897,7 +2202,10 @@ export type Question = {
   type: QuestionType;
 };
 
-/** Input type for creating or updating questions. */
+/**
+ * Input type for creating or updating questions.
+ * Defines the structure for adding or modifying questions in an assessment.
+ */
 export type QuestionInput = {
   content: Scalars['String']['input'];
   correctAnswer: Array<Scalars['String']['input']>;
@@ -1907,7 +2215,10 @@ export type QuestionInput = {
   type: QuestionType;
 };
 
-/** Represents an option for a question. */
+/**
+ * Represents an option for a question.
+ * Question options are possible answers for multiple-choice or single-choice questions, indicating whether they are correct or not.
+ */
 export type QuestionOption = {
   __typename?: 'QuestionOption';
   content: Scalars['String']['output'];
@@ -1915,13 +2226,19 @@ export type QuestionOption = {
   isCorrect: Scalars['Boolean']['output'];
 };
 
-/** Input type for question options. */
+/**
+ * Input type for question options.
+ * Specifies the details of options for multiple-choice or single-choice questions.
+ */
 export type QuestionOptionInput = {
   content: Scalars['String']['input'];
   isCorrect: Scalars['Boolean']['input'];
 };
 
-/** Enum for question types. */
+/**
+ * Enum for question types.
+ * Question types categorize the different formats of questions used in assessments, each requiring specific responses from learners.
+ */
 export enum QuestionType {
   Code = 'CODE',
   Essay = 'ESSAY',
@@ -1931,7 +2248,7 @@ export enum QuestionType {
   TrueFalse = 'TRUE_FALSE'
 }
 
-/** Represents rating ranges. */
+/** Represents rating ranges. Rating ranges are used to group courses by their average rating, providing a summary of the course quality and popularity. */
 export type RatingRange = {
   __typename?: 'RatingRange';
   count: Scalars['Int']['output'];
@@ -1940,7 +2257,7 @@ export type RatingRange = {
   min: Scalars['Float']['output'];
 };
 
-/** Represents revenue metrics for a course. */
+/** Represents revenue metrics for a course. Revenue metrics provide a summary of the financial performance of a course, including total revenue, average revenue per student, revenue by period, refund rate, and lifetime value. */
 export type RevenueMetrics = {
   __typename?: 'RevenueMetrics';
   averageRevenuePerStudent: Scalars['Float']['output'];
@@ -1950,7 +2267,7 @@ export type RevenueMetrics = {
   totalRevenue: Scalars['Float']['output'];
 };
 
-/** Represents revenue data for a specific period. */
+/** Represents revenue data for a specific period. Revenue periods are used to group revenue data by time intervals, providing a summary of the financial performance over different time periods. */
 export type RevenuePeriod = {
   __typename?: 'RevenuePeriod';
   averageRevenuePerEnrollment: Scalars['Float']['output'];
@@ -1959,7 +2276,10 @@ export type RevenuePeriod = {
   revenue: Scalars['Float']['output'];
 };
 
-/** Represents a course review. */
+/**
+ * Represents a course review.
+ * Course reviews provide feedback from learners on their experiences with a course, including ratings and comments.
+ */
 export type Review = Node & {
   __typename?: 'Review';
   content: Scalars['String']['output'];
@@ -1973,7 +2293,10 @@ export type Review = Node & {
   user: User;
 };
 
-/** Represents a rubric for assessment. */
+/**
+ * Represents a rubric for assessment.
+ * Rubrics provide criteria for grading assessments, outlining expectations and scoring guidelines for each criterion.
+ */
 export type Rubric = {
   __typename?: 'Rubric';
   criteria: Array<RubricCriterion>;
@@ -1982,7 +2305,10 @@ export type Rubric = {
   passingScore: Scalars['Float']['output'];
 };
 
-/** Represents a criterion in a rubric. */
+/**
+ * Represents a criterion in a rubric.
+ * Rubric criteria define specific aspects of an assessment that are evaluated, each with its own scoring levels and descriptions.
+ */
 export type RubricCriterion = {
   __typename?: 'RubricCriterion';
   description: Scalars['String']['output'];
@@ -1992,7 +2318,10 @@ export type RubricCriterion = {
   name: Scalars['String']['output'];
 };
 
-/** Input type for rubric criteria. */
+/**
+ * Input type for rubric criteria.
+ * Specifies the details of criteria within a rubric, including name, description, and scoring levels. The default unit is points.
+ */
 export type RubricCriterionInput = {
   description: Scalars['String']['input'];
   levels: Array<RubricLevelInput>;
@@ -2000,27 +2329,39 @@ export type RubricCriterionInput = {
   name: Scalars['String']['input'];
 };
 
-/** Input type for creating or updating rubrics. */
+/**
+ * Input type for creating or updating rubrics.
+ * Defines the structure for adding or modifying rubrics, including criteria and scoring levels. The default unit is points.
+ */
 export type RubricInput = {
   criteria: Array<RubricCriterionInput>;
   maxScore: Scalars['Float']['input'];
   passingScore: Scalars['Float']['input'];
 };
 
-/** Represents a level in a rubric criterion. */
+/**
+ * Represents a level in a rubric criterion.
+ * Rubric levels describe the performance standards for each criterion, with associated points and descriptions.
+ */
 export type RubricLevel = {
   __typename?: 'RubricLevel';
   description: Scalars['String']['output'];
   points: Scalars['Float']['output'];
 };
 
-/** Input type for rubric levels. */
+/**
+ * Input type for rubric levels.
+ * Defines the scoring levels for a rubric criterion, including points and descriptions. The default unit is points.
+ */
 export type RubricLevelInput = {
   description: Scalars['String']['input'];
   points: Scalars['Float']['input'];
 };
 
-/** Represents a rubric score. */
+/**
+ * Represents a rubric score.
+ * Rubric scores record the evaluation of a learner's performance against the rubric criteria, including feedback and points awarded.
+ */
 export type RubricScore = {
   __typename?: 'RubricScore';
   criterionId: Scalars['ID']['output'];
@@ -2028,14 +2369,20 @@ export type RubricScore = {
   score: Scalars['Float']['output'];
 };
 
-/** Input for rubric scores. */
+/**
+ * Input for rubric scores.
+ * Captures the scores for rubric criteria, including feedback and points awarded.
+ */
 export type RubricScoreInput = {
   criterionId: Scalars['ID']['input'];
   feedback?: InputMaybe<Scalars['String']['input']>;
   score: Scalars['Float']['input'];
 };
 
-/** Input for scheduling a course. */
+/**
+ * Input for scheduling a course.
+ * Defines the scheduling parameters for a course, including start and end dates, and enrollment deadlines.
+ */
 export type ScheduleCourseInput = {
   endDate: Scalars['DateTime']['input'];
   enrollmentDeadline?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2044,7 +2391,10 @@ export type ScheduleCourseInput = {
   timezone: Scalars['String']['input'];
 };
 
-/** Interface for searchable content. */
+/**
+ * Interface for searchable content.
+ * Searchable entities can be indexed and retrieved based on their title, description, and associated tags, enhancing discoverability.
+ */
 export type Searchable = {
   description?: Maybe<Scalars['String']['output']>;
   searchMetadata?: Maybe<Scalars['JSONObject']['output']>;
@@ -2052,7 +2402,10 @@ export type Searchable = {
   title: Scalars['String']['output'];
 };
 
-/** Represents a skill that can be learned. */
+/**
+ * Represents a skill that can be learned.
+ * Skills are specific abilities or knowledge areas that learners can acquire through courses and assessments.
+ */
 export type Skill = {
   __typename?: 'Skill';
   category: Scalars['String']['output'];
@@ -2063,7 +2416,7 @@ export type Skill = {
   prerequisites?: Maybe<Array<Skill>>;
 };
 
-/** Represents count by status. */
+/** Represents count by status. Status counts are used to group content by their status, providing a summary of the content readiness and availability. */
 export type StatusCount = {
   __typename?: 'StatusCount';
   count: Scalars['Int']['output'];
@@ -2071,7 +2424,10 @@ export type StatusCount = {
   status: ContentStatus;
 };
 
-/** Input for submitting an assessment. */
+/**
+ * Input for submitting an assessment.
+ * Captures the details of an assessment submission, including answers and time spent.
+ */
 export type SubmitAssessmentInput = {
   answers: Array<AssessmentAnswer>;
   assessmentId: Scalars['ID']['input'];
@@ -2193,7 +2549,10 @@ export type TimeSeriesData = {
   value: Scalars['Float']['output'];
 };
 
-/** Interface for trackable learning progress. */
+/**
+ * Interface for trackable learning progress.
+ * Trackable entities monitor the progress of learners, including start and completion times, to support personalized learning experiences.
+ */
 export type Trackable = {
   completedAt?: Maybe<Scalars['DateTime']['output']>;
   lastAccessedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2201,7 +2560,10 @@ export type Trackable = {
   startedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-/** Input for transferring an enrollment. */
+/**
+ * Input for transferring an enrollment.
+ * Defines the parameters for transferring an enrollment from one user to another, preserving progress and historical data.
+ */
 export type TransferEnrollmentInput = {
   enrollmentId: Scalars['ID']['input'];
   maintainProgress: Scalars['Boolean']['input'];
@@ -2209,14 +2571,20 @@ export type TransferEnrollmentInput = {
   reason: Scalars['String']['input'];
 };
 
-/** Enum for trend directions. */
+/**
+ * Enum for trend directions.
+ * Trend directions indicate the movement or change in a particular metric over time, helping to identify patterns and inform decisions.
+ */
 export enum TrendDirection {
   Decreasing = 'DECREASING',
   Increasing = 'INCREASING',
   Stable = 'STABLE'
 }
 
-/** Represents trend data over time. */
+/**
+ * Represents trend data over time.
+ * Trend data tracks changes in key metrics over time, helping to identify patterns and inform decision-making for course improvements.
+ */
 export type TrendsData = {
   __typename?: 'TrendsData';
   completionTrend: Array<TimeSeriesData>;
@@ -2224,20 +2592,23 @@ export type TrendsData = {
   enrollmentTrend: Array<TimeSeriesData>;
 };
 
-/** Input for updating an assessment. */
+/**
+ * Input for updating an assessment.
+ * Allows for modifications to an existing assessment's configuration and content.
+ */
 export type UpdateAssessmentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   id: Scalars['ID']['input'];
-  maxAttempts?: InputMaybe<Scalars['Int']['input']>;
-  passingScore?: InputMaybe<Scalars['Float']['input']>;
-  rubric?: InputMaybe<RubricInput>;
+  maxAttempts: Scalars['Int']['input'];
+  passingScore: Scalars['Float']['input'];
+  rubric: RubricInput;
   timeLimit?: InputMaybe<Scalars['Int']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  weight?: InputMaybe<Scalars['Float']['input']>;
+  weight: Scalars['Float']['input'];
 };
 
-/** Input for updating existing content with comprehensive fields. */
+/** Input for updating existing content with comprehensive fields. Content updates are used to modify existing content, including title, description, type, data, duration, URL, thumbnail, interactivity type, format, language, and accessibility. */
 export type UpdateContentInput = {
   accessibility?: InputMaybe<AccessibilityInput>;
   data?: InputMaybe<Scalars['JSONObject']['input']>;
@@ -2255,7 +2626,10 @@ export type UpdateContentInput = {
   version?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating a course. */
+/**
+ * Input for updating a course.
+ * Allows for the modification of existing course details, enabling updates to fields like title, description, and metadata.
+ */
 export type UpdateCourseInput = {
   accessLevel?: InputMaybe<AccessLevel>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -2268,7 +2642,10 @@ export type UpdateCourseInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating a learning path. */
+/**
+ * Input for updating a learning path.
+ * Allows for modifications to a user's learning path, including course sequence and completion deadlines.
+ */
 export type UpdateLearningPathInput = {
   courseIds: Array<Scalars['ID']['input']>;
   deadline?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2277,7 +2654,10 @@ export type UpdateLearningPathInput = {
   userId: Scalars['ID']['input'];
 };
 
-/** Input for updating a lesson. */
+/**
+ * Input for updating a lesson.
+ * Enables updates to an existing lesson's content and metadata.
+ */
 export type UpdateLessonInput = {
   content?: InputMaybe<ContentInput>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -2287,7 +2667,10 @@ export type UpdateLessonInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating a module. */
+/**
+ * Input for updating a module.
+ * Enables updates to an existing module's details, such as its title, description, and learning objectives.
+ */
 export type UpdateModuleInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -2297,7 +2680,10 @@ export type UpdateModuleInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating progress. */
+/**
+ * Input for updating progress.
+ * Allows for updates to an enrollment's progress, including completed items and time spent.
+ */
 export type UpdateProgressInput = {
   completedItems: Array<Scalars['ID']['input']>;
   enrollmentId: Scalars['ID']['input'];
@@ -2305,7 +2691,7 @@ export type UpdateProgressInput = {
   timeSpent: Scalars['Int']['input'];
 };
 
-/** Input for uploading new content with comprehensive fields. */
+/** Input for uploading new content with comprehensive fields. Content uploads are used to add new content to the system, including title, description, type, file, URL, data, duration, thumbnail, interactivity type, format, language, and accessibility. */
 export type UploadContentInput = {
   accessibility?: InputMaybe<AccessibilityInput>;
   data?: InputMaybe<Scalars['JSONObject']['input']>;
@@ -2323,14 +2709,18 @@ export type UploadContentInput = {
   version?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Represents a user in the system. */
+/**
+ * Represents a user in the system.
+ * Users are individuals who interact with the platform, either as learners, instructors, or administrators.
+ * They have roles that define their permissions and access levels within the system.
+ */
 export type User = Auditable & Node & {
   __typename?: 'User';
   achievements: Array<Achievement>;
   auditLog: Array<AuditEntry>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
-  email: Scalars['String']['output'];
+  email: Scalars['EmailAddress']['output'];
   enrollments: Array<Enrollment>;
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -2343,7 +2733,10 @@ export type User = Auditable & Node & {
   version: Scalars['Int']['output'];
 };
 
-/** Represents user preferences. */
+/**
+ * Represents user preferences.
+ * User preferences store individual settings for language, notifications, and other customizable options within the platform.
+ */
 export type UserPreferences = {
   __typename?: 'UserPreferences';
   emailNotifications: Scalars['Boolean']['output'];
@@ -2353,7 +2746,10 @@ export type UserPreferences = {
   timezone: Scalars['String']['output'];
 };
 
-/** Enum for user roles. */
+/**
+ * Enum for user roles.
+ * User roles define the permissions and access levels of users within the system, determining their capabilities and responsibilities.
+ */
 export enum UserRole {
   Admin = 'ADMIN',
   ContentManager = 'CONTENT_MANAGER',
@@ -2362,7 +2758,10 @@ export enum UserRole {
   Student = 'STUDENT'
 }
 
-/** Represents a user's skill level. */
+/**
+ * Represents a user's skill level.
+ * User skills track the proficiency levels of learners in specific skills, including endorsements and verification status.
+ */
 export type UserSkill = {
   __typename?: 'UserSkill';
   endorsements: Scalars['Int']['output'];
@@ -2371,7 +2770,10 @@ export type UserSkill = {
   verifiedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-/** Represents validation configuration. */
+/**
+ * Represents validation configuration.
+ * Validation configurations specify the rules and criteria for ensuring data quality and compliance within the platform.
+ */
 export type ValidationConfig = {
   __typename?: 'ValidationConfig';
   customValidation?: Maybe<Scalars['JSONObject']['output']>;
@@ -2379,7 +2781,10 @@ export type ValidationConfig = {
   severity: WarningSeverity;
 };
 
-/** Base type for validation errors. */
+/**
+ * Base type for validation errors.
+ * Validation errors highlight issues with data validation, including error codes, messages, and severity levels, helping to ensure data integrity.
+ */
 export type ValidationError = Error & {
   __typename?: 'ValidationError';
   code: Scalars['String']['output'];
@@ -2390,7 +2795,10 @@ export type ValidationError = Error & {
   validationType: Scalars['String']['output'];
 };
 
-/** Represents a validation rule. */
+/**
+ * Represents a validation rule.
+ * Validation rules define specific conditions that data must meet to be considered valid, including severity levels and custom messages.
+ */
 export type ValidationRule = {
   __typename?: 'ValidationRule';
   condition: Scalars['String']['output'];
@@ -2400,7 +2808,7 @@ export type ValidationRule = {
   severity: WarningSeverity;
 };
 
-/** Configuration for validation rules. */
+/** Configuration for validation rules. Validation rules are used to validate content, ensuring it meets specific criteria or standards. */
 export type ValidationRuleConfig = {
   __typename?: 'ValidationRuleConfig';
   customValidation?: Maybe<Scalars['String']['output']>;
@@ -2409,7 +2817,10 @@ export type ValidationRuleConfig = {
   severity: WarningSeverity;
 };
 
-/** Enum for warning severity levels. */
+/**
+ * Enum for warning severity levels.
+ * Warning severity levels classify the seriousness of warnings generated during validation or processing, guiding appropriate responses.
+ */
 export enum WarningSeverity {
   Critical = 'CRITICAL',
   Error = 'ERROR',
@@ -2568,6 +2979,7 @@ export type ResolversTypes = ResolversObject<{
   DifficultyLevel: DifficultyLevel;
   DurationRangeInput: DurationRangeInput;
   DurationUnit: DurationUnit;
+  EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']['output']>;
   EngagementMetrics: ResolverTypeWrapper<EngagementMetrics>;
   Enrollment: ResolverTypeWrapper<Enrollment>;
   EnrollmentConnection: ResolverTypeWrapper<EnrollmentConnection>;
@@ -2651,6 +3063,7 @@ export type ResolversTypes = ResolversObject<{
   TransferEnrollmentInput: TransferEnrollmentInput;
   TrendDirection: TrendDirection;
   TrendsData: ResolverTypeWrapper<TrendsData>;
+  URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   UpdateAssessmentInput: UpdateAssessmentInput;
   UpdateContentInput: UpdateContentInput;
   UpdateCourseInput: UpdateCourseInput;
@@ -2730,6 +3143,7 @@ export type ResolversParentTypes = ResolversObject<{
   DateTime: Scalars['DateTime']['output'];
   DifficultyCount: DifficultyCount;
   DurationRangeInput: DurationRangeInput;
+  EmailAddress: Scalars['EmailAddress']['output'];
   EngagementMetrics: EngagementMetrics;
   Enrollment: Enrollment;
   EnrollmentConnection: EnrollmentConnection;
@@ -2810,6 +3224,7 @@ export type ResolversParentTypes = ResolversObject<{
   Trackable: ResolversInterfaceTypes<ResolversParentTypes>['Trackable'];
   TransferEnrollmentInput: TransferEnrollmentInput;
   TrendsData: TrendsData;
+  URL: Scalars['URL']['output'];
   UpdateAssessmentInput: UpdateAssessmentInput;
   UpdateContentInput: UpdateContentInput;
   UpdateCourseInput: UpdateCourseInput;
@@ -3224,6 +3639,10 @@ export type DifficultyCountResolvers<ContextType = MyContext, ParentType extends
   percentage?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['EmailAddress'], any> {
+  name: 'EmailAddress';
+}
 
 export type EngagementMetricsResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['EngagementMetrics'] = ResolversParentTypes['EngagementMetrics']> = ResolversObject<{
   averageSessionDuration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -3787,6 +4206,10 @@ export type TrendsDataResolvers<ContextType = MyContext, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
+  name: 'URL';
+}
+
 export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
   name: 'Upload';
 }
@@ -3796,7 +4219,7 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   auditLog?: Resolver<Array<ResolversTypes['AuditEntry']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>;
   enrollments?: Resolver<Array<ResolversTypes['Enrollment']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -3902,6 +4325,7 @@ export type Resolvers<ContextType = MyContext> = ResolversObject<{
   CourseUpdate?: CourseUpdateResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DifficultyCount?: DifficultyCountResolvers<ContextType>;
+  EmailAddress?: GraphQLScalarType;
   EngagementMetrics?: EngagementMetricsResolvers<ContextType>;
   Enrollment?: EnrollmentResolvers<ContextType>;
   EnrollmentConnection?: EnrollmentConnectionResolvers<ContextType>;
@@ -3962,6 +4386,7 @@ export type Resolvers<ContextType = MyContext> = ResolversObject<{
   TimeSeriesData?: TimeSeriesDataResolvers<ContextType>;
   Trackable?: TrackableResolvers<ContextType>;
   TrendsData?: TrendsDataResolvers<ContextType>;
+  URL?: GraphQLScalarType;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   UserPreferences?: UserPreferencesResolvers<ContextType>;
